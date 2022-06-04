@@ -49,11 +49,13 @@ class Genetist:
         weights = np.arange(len(competitors), 0, step=-1)
         competitors = [row[1] for row in competitors]
         for _ in range(len(competitors) // 2):
-            parents.append(random.choices(
-                           population=competitors,
-                           weights=weights,
-                           k=2
-            ))
+            parents.append(
+                random.choices(
+                    population=competitors,
+                    weights=weights,
+                    k=2
+                )
+            )
 
         return parents
 
