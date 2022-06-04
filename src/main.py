@@ -21,6 +21,24 @@ if __name__ == '__main__':
     def fitness_funct_3(individual):
         return individual[0] * np.cos(individual[0]) * individual[1] * np.cos(individual[1]) * individual[2] * np.cos(individual[2])
 
-    genetist = Genetist(fitness_funct_1, num_population=2000, generations=100, prob_mutation=0.1, genome_size=20, type='int', boundaries=[-1000, 1000])
-    results = genetist.evolution()
-    print(results.sort_values(by='BEST_SCORE', ascending=False))
+    genetist = Genetist(
+        objective=fitness_funct_2,
+        num_population=2000,
+        generations=100,
+        prob_mutation=0.1,
+        genome_size=20,
+        type='continuous',
+        direction='minimize',
+        boundaries=[-10000, 10000],
+        verbose=True
+    )
+
+    results = genetist.run_evolution()
+
+    print()
+    print(f'EXECUTION TIME={results.execution_time}')
+    print(f'BEST SCORE={results.best_score}')
+    print(f'BEST INDIVIDUAL={results.best_individual}')
+    print('BEST PER GENERATION:')
+    print(results.best_per_generation_dataframe)
+    
