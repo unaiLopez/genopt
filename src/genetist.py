@@ -3,8 +3,8 @@ from tqdm import tqdm
 import random
 import time
 
-from DataTypeInference import DataTypeInference
-from Results import Results
+from data_type_inference import DataTypeInference
+from results import Results
 
 class Genetist:
     def __init__(self, objective, params, num_population=100, prob_mutation=0.1, generations=100, direction='minimize', verbose=True):
