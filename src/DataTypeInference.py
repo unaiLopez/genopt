@@ -17,7 +17,6 @@ class DataTypeInference:
     def infer_param_types(self):
         if self.search_space_type == 'flexible_search':
             keys = list(self.params.keys())
-            print('a')
             for key in keys:
                 subdict = self.params.get(key)
                 subkeys = subdict.keys()
@@ -29,9 +28,8 @@ class DataTypeInference:
                     else:
                         raise Exception('Unable to infer parameters type. Please check your parameters format.')
                 elif 'choices' in subkeys:
-                    if isinstance(subdict.get('choice'), list):
-                        if isinstance(subdict.get('choices')[0], str):
-                            self.params[key]['type'] = 'categorical'
+                    if isinstance(subdict.get('choices')[0], str):
+                        self.params[key]['type'] = 'categorical'
                     else:
                         raise Exception('Unable to infer parameters type. Please check your parameters format.')
 
