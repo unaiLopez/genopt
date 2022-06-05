@@ -2,15 +2,17 @@ import numpy as np
 from tqdm import tqdm
 import random
 import time
+import math
 
 from data_type_inference import DataTypeInference
 from results import Results
 
 class Genetist:
-    def __init__(self, objective, params, num_population=100, prob_mutation=0.1, generations=100, direction='minimize', verbose=True):
+    def __init__(self, objective, params, num_population=100, elite_rate=0.1, prob_mutation=0.1, generations=100, direction='minimize', verbose=True):
         self.objective = objective
         self.params = params
         self.num_population = num_population
+        self.elite_rate = elite_rate
         self.prob_mutation = prob_mutation
         self.generations = generations
         self.direction = direction
@@ -59,7 +61,6 @@ class Genetist:
         competitors = list()
         for individual in population:
             competitors.append([self.objective(self.individual_from_list_to_dict(individual)), individual])
-
         if self.direction == 'maximize':
             competitors = sorted(competitors, key=lambda x: x[0], reverse=True)
         elif self.direction == 'minimize':
@@ -73,7 +74,8 @@ class Genetist:
         parents = list()
         weights = np.arange(len(competitors), 0, step=-1)
         competitors = [row[1] for row in competitors]
-        for _ in range(len(competitors) // 2):
+        number_of_parents = math.ceil(len(competitors) * (1 - self.elite_rate)) // 2
+        for _ in range(number_of_parents):
             parents.append(
                 random.choices(
                     population=competitors,
@@ -111,9 +113,9 @@ class Genetist:
         elif self.params.get(param).get('type') == 'categorical':
             if len(self.params.get(param).get('choices')) == 2:
                 if self.params.get(param).get('choices')[0] != offspring[gene_mutation_index]:
-                    offspring[gene_mutation_index] = self.params.get(param)[0]
+                    offspring[gene_mutation_index] = self.params.get(param).get('choices')[0]
                 else:
-                    offspring[gene_mutation_index] = self.params.get(param)[1]
+                    offspring[gene_mutation_index] = self.params.get(param).get('choices')[1]
             else:
                 offspring[gene_mutation_index] = np.random.choice(self.params.get(param).get('choices'))
         
@@ -144,18 +146,26 @@ class Genetist:
 
         return offsprings
 
+    def get_elite(self, competitors):
+        competitors = [row[1] for row in competitors]
+        elite = competitors[:math.ceil(len(competitors) * self.elite_rate)]
+
+        return elite
+
     def evolution_loop(self):
         results = Results()
         individuals = self.initialize_population()
         progress_bar = tqdm(range(0, self.generations))
         for generation in progress_bar:
             individuals = self.compete(individuals)
+            elite_individuals = self.get_elite(individuals)
             if self.verbose == True: 
                 progress_bar.set_description(f'RUNNING GENERATION {generation + 1}')
                 print(f'THE BEST SOLUTION IN GENERATION {generation+1} IS: {individuals[0][1]} WITH A SCORE OF {individuals[0][0]}')
             results.add_generation_results({'GENERATION': generation+1, 'BEST_SCORE': individuals[0][0], 'BEST_INDIVIDUAL': individuals[0][1]})
             best_individuals = self.choose_parents(individuals)
             individuals = self.crossover(best_individuals)
+            individuals.extend(elite_individuals)
         
         return results
     
