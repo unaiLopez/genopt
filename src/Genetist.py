@@ -3,38 +3,63 @@ from tqdm import tqdm
 import random
 import time
 
+from DataTypeInference import DataTypeInference
 from Results import Results
 
 class Genetist:
-    def __init__(self, objective, genome_size, num_population=100, prob_mutation=0.1, generations=100, direction='minimize', type='discrete', boundaries=[-1000000, 1000000], verbose=True):
+    def __init__(self, objective, params, num_population=100, prob_mutation=0.1, generations=100, direction='minimize', verbose=True):
         self.objective = objective
-        self.genome_size = genome_size
+        self.params = params
         self.num_population = num_population
         self.prob_mutation = prob_mutation
         self.generations = generations
         self.direction = direction
-        self.type = type
-        self.boundaries = boundaries
         self.verbose = verbose
 
+        self.data_inference_object = DataTypeInference(params)
+        self.search_space_type = self.data_inference_object.infer_search_space_type()
+        self.params = self.data_inference_object.infer_param_types()
+
+    def create_individual(self):
+        new_individual = list()
+        if self.search_space_type == 'flexible_search':
+            for _, values in self.params.items():
+                if values['type'] == 'int':
+                    new_individual.append(np.random.random_integers(values['low'], values['high']))
+                elif values['type'] == 'float':
+                    new_individual.append(np.random.uniform(values['low'], values['high']))
+                elif values['type'] == 'categorical':
+                    new_individual.append(np.random.choice(values['choices']))
+                else:
+                    raise ValueError(f'Type {values["type"]} not supported.')
+        else:
+            for _, values in self.params.items():
+                new_individual.append(np.random.choice(values))
+        
+        return new_individual
+            
     def initialize_population(self):
         population = list()
         for _ in range(self.num_population):
-            if self.type == 'discrete':
-                population.append(np.random.randint(low=self.boundaries[0], high=self.boundaries[1], size=self.genome_size, dtype=int))
-            elif self.type == 'continuous':
-                population.append(np.random.uniform(low=self.boundaries[0], high=self.boundaries[1], size=self.genome_size))
-            elif self.type == 'binary':
-                population.append(np.random.randint(low=0, high=1, size=self.genome_size, dtype=int))
-            else:
-                raise Exception(f'Type {self.type} not supported.')
+            individual = self.create_individual()
+            population.append(individual)
 
         return population
+    
+    def individual_from_list_to_dict(self, individual):
+        new_individual = {}
+        names = list(self.params.keys())
+        for name, gene in zip(names, individual):
+            new_individual[name] = gene
+        
+        return new_individual
+        
 
     def compete(self, population):
         competitors = list()
         for individual in population:
-            competitors.append([self.objective(individual), individual])
+            competitors.append([self.objective(self.individual_from_list_to_dict(individual)), individual])
+
         if self.direction == 'maximize':
             competitors = sorted(competitors, key=lambda x: x[0], reverse=True)
         elif self.direction == 'minimize':
@@ -58,27 +83,57 @@ class Genetist:
             )
 
         return parents
+    
+    def mutate_in_fixed_search(self, offspring, gene_mutation_index, param):
+        if len(self.params.get(param)) == 2:
+            if self.params.get(param)[0] != offspring[gene_mutation_index]:
+                offspring[gene_mutation_index] = self.params.get(param)[0]
+            else:
+                offspring[gene_mutation_index] = self.params.get(param)[1]
+        else:
+            offspring[gene_mutation_index] = np.random.choice(self.params.get(param))
+        
+        return offspring
+
+    def mutate_in_flexible_search(self, offspring, gene_mutation_index, param):
+        if self.params.get(param).get('type') == 'int':
+            if self.params[param]['low'] == 0 and self.params[param]['high'] == 1:
+                 if offspring[gene_mutation_index] == 0:
+                    offspring[gene_mutation_index] = 1
+                 else:
+                    offspring[gene_mutation_index] = 0
+            else:
+                offspring[gene_mutation_index] = np.random.random_integers(self.params[param]['low'], (self.params[param]['high']))
+
+        elif self.params.get(param).get('type') == 'float':
+            offspring[gene_mutation_index] = np.random.uniform(self.params[param]['low'], self.params[param]['high'])
+
+        elif self.params.get(param).get('type') == 'categorical':
+            if len(self.params.get(param).get('choices')) == 2:
+                if self.params.get(param).get('choices')[0] != offspring[gene_mutation_index]:
+                    offspring[gene_mutation_index] = self.params.get(param)[0]
+                else:
+                    offspring[gene_mutation_index] = self.params.get(param)[1]
+            else:
+                offspring[gene_mutation_index] = np.random.choice(self.params.get(param).get('choices'))
+        
+        return offspring
 
     def mutate(self, offspring):
         if np.random.rand() < self.prob_mutation:
             gene_mutation_index = np.random.random_integers(low=0,  high=len(offspring)-1)
-            if self.type == 'discrete':
-                offspring[gene_mutation_index] = np.random.random_integers(low=self.boundaries[0], high=self.boundaries[1])
-            elif self.type == 'continuous':
-                offspring[gene_mutation_index] = np.random.uniform(low=self.boundaries[0], high=self.boundaries[1], size=self.genome_size)[0]
-            elif self.binary == 'binary':
-                if offspring[gene_mutation_index] == 0:
-                    offspring[gene_mutation_index] = 1
-                else:
-                    offspring[gene_mutation_index] = 0
+            param = list(self.params.keys())[gene_mutation_index]
+            if self.search_space_type == 'flexible_search':
+                offspring = self.mutate_in_flexible_search(offspring, gene_mutation_index, param)
             else:
-                raise Exception(f'Type {self.type} not supported.')
-
+               offspring = self.mutate_in_fixed_search(offspring, gene_mutation_index, param)
+            
+        
         return offspring
 
     def crossover(self, best_parents):
         offsprings = list()
-        threshold = np.random.random_integers(low=0, high=self.genome_size-1)
+        threshold = np.random.random_integers(low=0, high=len(best_parents[0])-1)
         for parents in best_parents:
             offspring_1 = list(parents[0][:threshold]) + list(parents[1][threshold:])
             offspring_2 = list(parents[1][:threshold]) + list(parents[0][threshold:])
@@ -110,6 +165,7 @@ class Genetist:
         end_time = time.time()
 
         results.set_execution_time(end_time - start_time)
+        results.convert_best_individuals_to_param_columns(self.params)
         results.sort_best_per_generation_dataframe(column='BEST_SCORE', direction=self.direction)
         results.set_best_score()
         results.set_best_individual()

@@ -25,6 +25,10 @@ class Results:
     def add_generation_results(self, generation_result):
         self.best_per_generation_dataframe = self.best_per_generation_dataframe.append(generation_result, ignore_index=True)
 
+    def convert_best_individuals_to_param_columns(self, params):
+        for i, param in enumerate(params):
+            self.best_per_generation_dataframe[param] = self.best_per_generation_dataframe['BEST_INDIVIDUAL'].apply(lambda x: x[i])
+
     def sort_best_per_generation_dataframe(self, column, direction):
         if direction == 'maximize':
             self.best_per_generation_dataframe = self.best_per_generation_dataframe.sort_values(by=column, ascending=False)
