@@ -4,23 +4,33 @@ import random
 import time
 import math
 
+from crossover import Crossover
+from mutation import Mutation
 from data_type_inference import DataTypeInference
 from results import Results
 
 class Genetist:
-    def __init__(self, objective, params, num_population=100, elite_rate=0.1, prob_mutation=0.1, generations=100, direction='minimize', verbose=True):
+    def __init__(self, objective, params, num_population=100, cross_over_type='one_point', mutation_type='single_gene', elite_rate=0.1, prob_mutation=0.1, generations=100, direction='minimize', verbose=True):
         self.objective = objective
         self.params = params
         self.num_population = num_population
+        self.cross_over_type = cross_over_type
+        self.mutation_type = mutation_type
         self.elite_rate = elite_rate
         self.prob_mutation = prob_mutation
         self.generations = generations
         self.direction = direction
         self.verbose = verbose
+        self.search_space_type = None
 
-        self.data_inference_object = DataTypeInference(params)
-        self.search_space_type = self.data_inference_object.infer_search_space_type()
-        self.params = self.data_inference_object.infer_param_types()
+        self.input_datatypes_inference()
+        self.crossover = Crossover(self.cross_over_type, self.search_space_type)
+        self.mutation = Mutation(self.mutation_type, self.prob_mutation, self.search_space_type, self.params)
+
+    def input_datatypes_inference(self):
+        data_inference_object = DataTypeInference(self.params)
+        self.search_space_type = data_inference_object.infer_search_space_type()
+        self.params = data_inference_object.infer_param_types()
 
     def create_individual(self):
         new_individual = list()
@@ -85,66 +95,17 @@ class Genetist:
             )
 
         return parents
-    
-    def mutate_in_fixed_search(self, offspring, gene_mutation_index, param):
-        if len(self.params.get(param)) == 2:
-            if self.params.get(param)[0] != offspring[gene_mutation_index]:
-                offspring[gene_mutation_index] = self.params.get(param)[0]
-            else:
-                offspring[gene_mutation_index] = self.params.get(param)[1]
-        else:
-            offspring[gene_mutation_index] = np.random.choice(self.params.get(param))
-        
-        return offspring
 
-    def mutate_in_flexible_search(self, offspring, gene_mutation_index, param):
-        if self.params.get(param).get('type') == 'int':
-            if self.params[param]['low'] == 0 and self.params[param]['high'] == 1:
-                 if offspring[gene_mutation_index] == 0:
-                    offspring[gene_mutation_index] = 1
-                 else:
-                    offspring[gene_mutation_index] = 0
-            else:
-                offspring[gene_mutation_index] = np.random.random_integers(self.params[param]['low'], (self.params[param]['high']))
-
-        elif self.params.get(param).get('type') == 'float':
-            offspring[gene_mutation_index] = np.random.uniform(self.params[param]['low'], self.params[param]['high'])
-
-        elif self.params.get(param).get('type') == 'categorical':
-            if len(self.params.get(param).get('choices')) == 2:
-                if self.params.get(param).get('choices')[0] != offspring[gene_mutation_index]:
-                    offspring[gene_mutation_index] = self.params.get(param).get('choices')[0]
-                else:
-                    offspring[gene_mutation_index] = self.params.get(param).get('choices')[1]
-            else:
-                offspring[gene_mutation_index] = np.random.choice(self.params.get(param).get('choices'))
-        
-        return offspring
-
-    def mutate(self, offspring):
-        if np.random.rand() < self.prob_mutation:
-            gene_mutation_index = np.random.random_integers(low=0,  high=len(offspring)-1)
-            param = list(self.params.keys())[gene_mutation_index]
-            if self.search_space_type == 'flexible_search':
-                offspring = self.mutate_in_flexible_search(offspring, gene_mutation_index, param)
-            else:
-               offspring = self.mutate_in_fixed_search(offspring, gene_mutation_index, param)
-            
-        
-        return offspring
-
-    def crossover(self, best_parents):
-        offsprings = list()
-        threshold = np.random.random_integers(low=0, high=len(best_parents[0])-1)
+    def run_crossover(self, best_parents):
+        childs = list()
         for parents in best_parents:
-            offspring_1 = list(parents[0][:threshold]) + list(parents[1][threshold:])
-            offspring_2 = list(parents[1][:threshold]) + list(parents[0][threshold:])
-            offspring_1 = self.mutate(offspring_1)
-            offspring_2 = self.mutate(offspring_2)
-            offsprings.append(offspring_1)
-            offsprings.append(offspring_2)
+            child_1, child_2 = self.crossover.crossover(parents[0], parents[1])
+            child_1 = self.mutation.mutate(child_1)
+            child_2 = self.mutation.mutate(child_2)
+            childs.append(child_1)
+            childs.append(child_2)
 
-        return offsprings
+        return childs
 
     def get_elite(self, competitors):
         competitors = [row[1] for row in competitors]
@@ -158,15 +119,15 @@ class Genetist:
         progress_bar = tqdm(range(0, self.generations))
         for generation in progress_bar:
             individuals = self.compete(individuals)
-            elite_individuals = self.get_elite(individuals)
             if self.verbose == True: 
                 progress_bar.set_description(f'RUNNING GENERATION {generation + 1}')
                 print(f'THE BEST SOLUTION IN GENERATION {generation+1} IS: {individuals[0][1]} WITH A SCORE OF {individuals[0][0]}')
+            elite_individuals = self.get_elite(individuals)
             results.add_generation_results({'GENERATION': generation+1, 'BEST_SCORE': individuals[0][0], 'BEST_INDIVIDUAL': individuals[0][1]})
             best_individuals = self.choose_parents(individuals)
-            individuals = self.crossover(best_individuals)
+            individuals = self.run_crossover(best_individuals)
             individuals.extend(elite_individuals)
-        
+            
         return results
     
     def run_evolution(self):

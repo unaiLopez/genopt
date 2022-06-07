@@ -1,11 +1,11 @@
 import numpy as np
 
-from Genetist import Genetist
+from genetist import Genetist
 
 if __name__ == '__main__':
     def fitness_funct_1(individual):
-        score = 0
-        for gene in individual:
+        for _, gene in individual.items():
+            score = 0
             if gene > 60:
                 score+= 1000
             elif gene < 10:
@@ -36,19 +36,17 @@ if __name__ == '__main__':
         'y': {'low': -1000, 'high': 1000},
         'z': {'low': -1000, 'high': 1000},
         'k': {'low': -1000, 'high': 1000},
-
-
     }
 
     params_1 = {
-        'x1': {'type': 'int', 'low': -1000, 'high': 1000},
-        'x2': {'type': 'int', 'low': -1000, 'high': 1000},
-        'x3': {'type': 'int', 'low': -1000, 'high': 1000},
-        'x4': {'type': 'int', 'low': -1000, 'high': 1000},
-        'x5': {'type': 'int', 'low': -1000, 'high': 1000},
-        'x6': {'type': 'int', 'low': -1000, 'high': 1000},
-        'x7': {'type': 'int', 'low': -1000, 'high': 1000},
-        'x8': {'type': 'int', 'low': -1000, 'high': 1000},
+        'x1': {'low': -1000, 'high': 1000},
+        'x2': {'low': -1000, 'high': 1000},
+        'x3': {'low': -1000, 'high': 1000},
+        'x4': {'low': -1000, 'high': 1000},
+        'x5': {'low': -1000, 'high': 1000},
+        'x6': {'low': -1000, 'high': 1000},
+        'x7': {'low': -1000, 'high': 1000},
+        'x8': {'low': -1000, 'high': 1000},
     }
 
     params_2 = {
@@ -85,7 +83,9 @@ if __name__ == '__main__':
         objective=fitness_funct_2,
         params=params,
         num_population=100,
-        generations=150,
+        elite_rate=0.1,
+        mutation_type='multiple_genes',
+        generations=100,
         prob_mutation=0.1,
         direction='maximize',
         verbose=True
