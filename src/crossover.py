@@ -1,6 +1,5 @@
 import numpy as np
 
-from mutation import Mutation
 from typing import List, Union, Tuple
 
 class Crossover:

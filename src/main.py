@@ -80,18 +80,15 @@ if __name__ == '__main__':
     }
 
     genetist = Genetist(
-        objective=fitness_funct_2,
         params=params,
-        num_population=100,
+        num_population=400,
         elite_rate=0.1,
-        mutation_type='multiple_genes',
-        generations=100,
-        prob_mutation=0.1,
-        direction='maximize',
-        verbose=True
+        mutation_type='single_gene',
+        generations=1000,
+        prob_mutation=0.1
     )
 
-    results = genetist.run_evolution()
+    results = genetist.optimize(objective=fitness_funct_2, direction='maximize')
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')

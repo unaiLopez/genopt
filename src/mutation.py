@@ -43,48 +43,51 @@ class Mutation:
         return child
 
     def _single_mutation_in_fixed_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
-        if np.random.rand() < self.prob_mutation:
-            gene_index = np.random.randint(0,  len(child)-1)
-            param = list(self.params.keys())[gene_index]
-            child = self._fixed_search_mutation_process(child, gene_index, param)
+        gene_index = np.random.randint(0,  len(child)-1)
+        param = list(self.params.keys())[gene_index]
+        child = self._fixed_search_mutation_process(child, gene_index, param)
             
         return child
 
     def _single_mutation_in_flexible_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
-        if np.random.rand() < self.prob_mutation:
-            gene_index = np.random.randint(0,  len(child)-1)
-            param = list(self.params.keys())[gene_index]
-            child = self._flexible_search_mutation_process(child, gene_index, param)
+        gene_index = np.random.randint(0,  len(child)-1)
+        param = list(self.params.keys())[gene_index]
+        child = self._flexible_search_mutation_process(child, gene_index, param)
         
         return child
 
     def _multiple_mutation_in_fixed_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
-        if np.random.rand() < self.prob_mutation:
-            for gene_index in range(len(child)):
-                param = list(self.params.keys())[gene_index]
-                child = self._fixed_search_mutation_process(child, gene_index, param)
+        number_of_mutations = np.random.randint(1, len(child))
+        gene_indexes = np.random.randint(0, len(child)-1, size=number_of_mutations)
+        for gene_index in gene_indexes:
+            param = list(self.params.keys())[gene_index]
+            child = self._fixed_search_mutation_process(child, gene_index, param)
         
         return child
                 
 
     def _multiple_mutation_in_flexible_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
-        if np.random.rand() < self.prob_mutation:
-            for gene_index in range(len(child)):
-                param = list(self.params.keys())[gene_index]
-                child = self._flexible_search_mutation_process(child, gene_index, param)
+        number_of_mutations = np.random.randint(1, len(child))
+        gene_indexes = np.random.randint(0, len(child)-1, size=number_of_mutations)
+        for gene_index in gene_indexes:
+            param = list(self.params.keys())[gene_index]
+            child = self._flexible_search_mutation_process(child, gene_index, param)
         
         return child
 
     def mutate(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
-        if self.mutation_type == 'single_gene':
-            if self.search_space_type == 'fixed_search':
-                return self._single_mutation_in_fixed_search(child)
+        if np.random.rand() < self.prob_mutation:
+            if self.mutation_type == 'single_gene':
+                if self.search_space_type == 'fixed_search':
+                    return self._single_mutation_in_fixed_search(child)
+                else:
+                    return self._single_mutation_in_flexible_search(child)
+            elif self.mutation_type == 'multiple_genes':
+                if self.search_space_type == 'fixed_search':
+                    return self._multiple_mutation_in_fixed_search(child)
+                else:
+                    return self._multiple_mutation_in_flexible_search(child)
             else:
-                return self._single_mutation_in_flexible_search(child)
-        elif self.mutation_type == 'multiple_genes':
-            if self.search_space_type == 'fixed_search':
-                return self._multiple_mutation_in_fixed_search(child)
-            else:
-                return self._multiple_mutation_in_flexible_search(child)
+                raise Exception(f'Mutation type {self.mutation_type} not supported.')
         else:
-            raise Exception(f'Mutation type {self.mutation_type} not supported.')
+            return child
