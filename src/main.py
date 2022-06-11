@@ -81,12 +81,12 @@ if __name__ == '__main__':
 
     genetist = Genetist(
         params=params,
-        num_population=100,
+        num_population=500,
         elite_rate=0.1,
         mutation_type='single_gene',
         generations=100,
-        prob_mutation=0.1,
-        verbose=0
+        prob_mutation=0.3,
+        verbose=3
     )
 
     results = genetist.optimize(objective=fitness_funct_2, direction='maximize')

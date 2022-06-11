@@ -8,7 +8,7 @@ class Crossover:
         self.search_space_type = search_space_type
 
     def _one_point_crossover(self, parent_1: List[Union[int, float, str]], parent_2: List[Union[int, float, str]]) -> Tuple[List[Union[int, float, str]], List[Union[int, float, str]]]:
-        point = np.random.randint(0, len(parent_1) - 1)
+        point = np.random.randint(1, len(parent_1) - 1)
         child_1 = parent_1[:point] + parent_2[point:]
         child_2 = parent_2[:point] + parent_1[point:]
         

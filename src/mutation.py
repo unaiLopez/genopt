@@ -43,14 +43,14 @@ class Mutation:
         return child
 
     def _single_mutation_in_fixed_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
-        gene_index = np.random.randint(0,  len(child)-1)
+        gene_index = np.random.randint(0,  len(child))
         param = list(self.params.keys())[gene_index]
         child = self._fixed_search_mutation_process(child, gene_index, param)
             
         return child
 
     def _single_mutation_in_flexible_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
-        gene_index = np.random.randint(0,  len(child)-1)
+        gene_index = np.random.randint(0,  len(child))
         param = list(self.params.keys())[gene_index]
         child = self._flexible_search_mutation_process(child, gene_index, param)
         
@@ -58,7 +58,7 @@ class Mutation:
 
     def _multiple_mutation_in_fixed_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
         number_of_mutations = np.random.randint(1, len(child))
-        gene_indexes = np.random.randint(0, len(child)-1, size=number_of_mutations)
+        gene_indexes = np.random.randint(0, len(child), size=number_of_mutations)
         for gene_index in gene_indexes:
             param = list(self.params.keys())[gene_index]
             child = self._fixed_search_mutation_process(child, gene_index, param)
@@ -68,7 +68,7 @@ class Mutation:
 
     def _multiple_mutation_in_flexible_search(self, child: List[Union[int, float, str]]) -> List[Union[int, float, str]]:
         number_of_mutations = np.random.randint(1, len(child))
-        gene_indexes = np.random.randint(0, len(child)-1, size=number_of_mutations)
+        gene_indexes = np.random.randint(0, len(child), size=number_of_mutations)
         for gene_index in gene_indexes:
             param = list(self.params.keys())[gene_index]
             child = self._flexible_search_mutation_process(child, gene_index, param)
