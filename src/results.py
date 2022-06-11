@@ -8,11 +8,12 @@ class Results:
         self.execution_time = None
         self.best_per_generation_dataframe = pd.DataFrame()
     
-    def set_best_score(self):
-        self.best_score = self.best_per_generation_dataframe['BEST_SCORE'].values[0]
+    def get_best_score(self):
+        self.best_score = self.best_per_generation_dataframe['BEST_SCORE'].max()
 
-    def set_best_individual(self):
-        self.best_individual = self.best_per_generation_dataframe['BEST_INDIVIDUAL'].values[0]
+    def get_best_individual(self):
+        best_generation = self.best_per_generation_dataframe[self.best_per_generation_dataframe['BEST_SCORE'] == self.best_per_generation_dataframe['BEST_SCORE'].max()]
+        self.best_individual = best_generation.iloc[0,2:].to_dict()
     
     def set_execution_time(self, execution_time):
         self.execution_time = execution_time
@@ -22,12 +23,10 @@ class Results:
         seconds = time.split(':')[2]
         self.execution_time = f'{hours} hours {minutes} minutes {seconds} seconds'
     
-    def add_generation_results(self, generation_result):
-        self.best_per_generation_dataframe = self.best_per_generation_dataframe.append(generation_result, ignore_index=True)
-
-    def convert_best_individuals_to_param_columns(self, params):
-        for i, param in enumerate(params):
-            self.best_per_generation_dataframe[param] = self.best_per_generation_dataframe['BEST_INDIVIDUAL'].apply(lambda x: x[i])
+    def add_generation_results(self, generation, best_score, best_individual):
+        generation_results = {'GENERATION': generation, 'BEST_SCORE': best_score}
+        generation_results.update(best_individual)
+        self.best_per_generation_dataframe = self.best_per_generation_dataframe.append(generation_results, ignore_index=True)
 
     def sort_best_per_generation_dataframe(self, column, direction):
         if direction == 'maximize':

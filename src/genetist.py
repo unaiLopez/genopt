@@ -4,13 +4,17 @@ import random
 import time
 import math
 
+import logging
 from crossover import Crossover
 from mutation import Mutation
 from datatype_inference import DataTypeInference
 from results import Results
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger('GENETIST')
+
 class Genetist:
-    def __init__(self, params, num_population=100, generations=100, cross_over_type='one_point', mutation_type='single_gene', prob_mutation=0.1, elite_rate=0.1):
+    def __init__(self, params, num_population=100, generations=100, cross_over_type='one_point', mutation_type='single_gene', prob_mutation=0.1, elite_rate=0.1, verbose=1):
         self.params = params
         self.num_population = num_population
         self.generations = generations
@@ -18,6 +22,7 @@ class Genetist:
         self.mutation_type = mutation_type
         self.prob_mutation = prob_mutation
         self.elite_rate = elite_rate
+        self.verbose = verbose
 
         data_inference_object = DataTypeInference(self.params)
         self.search_space_type = data_inference_object.infer_search_space_type()
@@ -44,6 +49,7 @@ class Genetist:
         return new_individual
             
     def _initialize_population(self):
+        if self.verbose > 1: logger.info(f'Initializing population...')
         population = list()
         for _ in range(self.num_population):
             individual = self._initialize_individual()
@@ -60,6 +66,7 @@ class Genetist:
         return new_individual
     
     def _calculate_population_fitness(self, individuals, objective):
+        if self.verbose > 1: logger.info(f'Calculating population fitness...')
         new_individuals = list()
         for individual in individuals:
             new_individuals.append([objective(self._individual_from_list_to_dict(individual)), individual])
@@ -67,6 +74,7 @@ class Genetist:
         return new_individuals
 
     def _order_population_by_fitness(self, individuals, direction):
+        if self.verbose > 1: logger.info(f'Ordering population by fitness...')
         if direction == 'maximize':
             individuals = sorted(individuals, key=lambda x: x[0], reverse=True)
         elif direction == 'minimize':
@@ -77,6 +85,7 @@ class Genetist:
         return individuals
 
     def _choose_parents(self, competitors):
+        if self.verbose: logger.info(f'Selecting parents...')
         parents = list()
         weights = np.arange(len(competitors), 0, step=-1)
         competitors = [row[1] for row in competitors]
@@ -93,6 +102,7 @@ class Genetist:
         return parents
 
     def _run_crossover_with_mutation(self, best_parents):
+        if self.verbose > 1: logger.info(f'Running crossover with mutation...')
         childs = list()
         for parents in best_parents:
             child_1, child_2 = self.crossover.crossover(parents[0], parents[1])
@@ -104,12 +114,13 @@ class Genetist:
         return childs
 
     def _get_elite(self, competitors):
+        if self.verbose > 1: logger.info(f'Getting elite individuals...')
         competitors = [row[1] for row in competitors]
         elite = competitors[:math.ceil(len(competitors) * self.elite_rate)]
 
         return elite
     
-    def optimize(self, objective, direction, verbose=True):
+    def optimize(self, objective, direction):
         start_time = time.time()
         
         results = Results()
@@ -124,19 +135,20 @@ class Genetist:
             individuals.extend(elite_individuals)
             individuals = self._calculate_population_fitness(individuals, objective)
             individuals = self._order_population_by_fitness(individuals, direction)
-            results.add_generation_results({'GENERATION': generation+1, 'BEST_SCORE': individuals[0][0], 'BEST_INDIVIDUAL': individuals[0][1]})
-            if verbose == True: 
-                progress_bar.set_description(f'RUNNING GENERATION {generation + 1} | BEST SCORE IS {individuals[0][0]}')
-                best_individual = self._individual_from_list_to_dict(individuals[0][1])
-                print(f'THE BEST SOLUTION IN GENERATION {generation+1} IS: {best_individual}')
+            best_individual = self._individual_from_list_to_dict(individuals[0][1])
+            best_score = individuals[0][0]
+
+            results.add_generation_results(generation+1, best_score, best_individual)
+            progress_bar.set_description(f'RUNNING GENERATION {generation + 1}')
+            if self.verbose == 1:
+                logger.info(f'THE BEST SOLUTION IN GENERATION {generation+1} IS: {best_individual}')
 
         end_time = time.time()
 
         results.set_execution_time(end_time - start_time)
-        results.convert_best_individuals_to_param_columns(self.params)
         results.sort_best_per_generation_dataframe(column='BEST_SCORE', direction=direction)
-        results.set_best_score()
-        results.set_best_individual()
+        results.get_best_score()
+        results.get_best_individual()
             
         return results
 
