@@ -1,5 +1,3 @@
-import numpy as np
-
 from genetist import Genetist
 
 if __name__ == '__main__':
@@ -17,9 +15,6 @@ if __name__ == '__main__':
 
     def fitness_funct_2(individual):
         return (individual['x']**2 - 4*individual['y']**3 / individual['z']**4) * individual['k']**3
-    
-    def fitness_funct_3(individual):
-        return individual[0] * np.cos(individual[0]) * individual[1] * np.cos(individual[1]) * individual[2] * np.cos(individual[2])
 
     def fitness_categorical(individual):
         score = 0
@@ -56,14 +51,14 @@ if __name__ == '__main__':
     }
 
     params_categorical = {
-        'x1': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
-        'x2': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
-        'x3': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
-        'x4': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
-        'x5': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
-        'x6': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
-        'x7': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
-        'x8': {'type': 'categorical', 'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x1': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x2': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x3': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x4': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x5': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x6': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x7': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
+        'x8': {'choices': ['HOLA', 'HOLA2', 'HOLA3', 'HOLA4', 'HOLA5', 'HOLA6', 'HOLA7', 'HOLA8', 'HOLA9', 'HOLA10']},
 
     }
 
@@ -81,7 +76,7 @@ if __name__ == '__main__':
 
     genetist = Genetist(
         params=params,
-        num_population=500,
+        num_population=100,
         elite_rate=0.1,
         mutation_type='single_gene',
         generations=100,

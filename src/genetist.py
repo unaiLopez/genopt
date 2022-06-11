@@ -7,6 +7,7 @@ import math
 import logging
 from crossover import Crossover
 from mutation import Mutation
+from individual import Individual
 from datatype_inference import DataTypeInference
 from results import Results
 
@@ -30,70 +31,45 @@ class Genetist:
         self.crossover = Crossover(self.cross_over_type, self.search_space_type)
         self.mutation = Mutation(self.mutation_type, self.prob_mutation, self.search_space_type, self.params)
 
-    def _initialize_individual(self):
-        new_individual = list()
-        if self.search_space_type == 'flexible_search':
-            for _, values in self.params.items():
-                if values['type'] == 'int':
-                    new_individual.append(np.random.random_integers(values['low'], values['high']))
-                elif values['type'] == 'float':
-                    new_individual.append(np.random.uniform(values['low'], values['high']))
-                elif values['type'] == 'categorical':
-                    new_individual.append(np.random.choice(values['choices']))
-                else:
-                    raise ValueError(f'Type {values["type"]} not supported.')
-        else:
-            for _, values in self.params.items():
-                new_individual.append(np.random.choice(values))
-        
-        return new_individual
+    
             
-    def _initialize_population(self):
+    def _initialize_population(self, objective):
         if self.verbose > 1: logger.info(f'Initializing population...')
         population = list()
         for _ in range(self.num_population):
-            individual = self._initialize_individual()
-            population.append(individual)
+            population.append(Individual(self.params, self.search_space_type, objective))
 
         return population
     
-    def _individual_from_list_to_dict(self, individual):
-        new_individual = {}
-        names = list(self.params.keys())
-        for name, gene in zip(names, individual):
-            new_individual[name] = gene
-        
-        return new_individual
-    
-    def _calculate_population_fitness(self, individuals, objective):
+    def _calculate_population_fitness(self, individuals):
         if self.verbose > 1: logger.info(f'Calculating population fitness...')
         new_individuals = list()
         for individual in individuals:
-            new_individuals.append([objective(self._individual_from_list_to_dict(individual)), individual])
+            individual.calculate_fitness()
+            new_individuals.append(individual)
 
         return new_individuals
 
     def _order_population_by_fitness(self, individuals, direction):
         if self.verbose > 1: logger.info(f'Ordering population by fitness...')
         if direction == 'maximize':
-            individuals = sorted(individuals, key=lambda x: x[0], reverse=True)
+            individuals = sorted(individuals, key=lambda individual: individual.get_fitness(), reverse=True)
         elif direction == 'minimize':
-            individuals = sorted(individuals, key=lambda x: x[0])
+            individuals = sorted(individuals, key=lambda individual: individual.get_fitness())
         else:
             raise Exception(f'Direction {direction} not supported.')
 
         return individuals
 
-    def _choose_parents(self, competitors):
+    def _choose_parents(self, individuals):
         if self.verbose: logger.info(f'Selecting parents...')
         parents = list()
-        weights = np.arange(len(competitors), 0, step=-1)
-        competitors = [row[1] for row in competitors]
-        number_of_parents = math.ceil(len(competitors) * (1 - self.elite_rate)) // 2
+        weights = np.arange(len(individuals), 0, step=-1)
+        number_of_parents = math.ceil(len(individuals) * (1 - self.elite_rate)) // 2
         for _ in range(number_of_parents):
             parents.append(
                 random.choices(
-                    population=competitors,
+                    population=individuals,
                     weights=weights,
                     k=2
                 )
@@ -113,10 +89,9 @@ class Genetist:
 
         return childs
 
-    def _get_elite(self, competitors):
+    def _get_elite(self, individuals):
         if self.verbose > 1: logger.info(f'Getting elite individuals...')
-        competitors = [row[1] for row in competitors]
-        elite = competitors[:math.ceil(len(competitors) * self.elite_rate)]
+        elite = individuals[:math.ceil(len(individuals) * self.elite_rate)]
 
         return elite
     
@@ -124,19 +99,24 @@ class Genetist:
         start_time = time.time()
         
         results = Results()
-        individuals = self._initialize_population()
-        individuals = self._calculate_population_fitness(individuals, objective)
+        individuals = self._initialize_population(objective)
+        print(individuals[0])
+        individuals = self._calculate_population_fitness(individuals)
+        print(individuals[0])
+
         individuals = self._order_population_by_fitness(individuals, direction)
+        print(individuals[0])
+
         progress_bar = tqdm(range(0, self.generations))
         for generation in progress_bar:
             elite_individuals = self._get_elite(individuals)
             parents = self._choose_parents(individuals)
             individuals = self._run_crossover_with_mutation(parents)
             individuals.extend(elite_individuals)
-            individuals = self._calculate_population_fitness(individuals, objective)
+            individuals = self._calculate_population_fitness(individuals)
             individuals = self._order_population_by_fitness(individuals, direction)
-            best_individual = self._individual_from_list_to_dict(individuals[0][1])
-            best_score = individuals[0][0]
+            best_individual = individuals[0].get_name_genome_genes()
+            best_score = individuals[0].get_fitness()
 
             results.add_generation_results(generation+1, best_score, best_individual)
             progress_bar.set_description(f'RUNNING GENERATION {generation + 1}')
