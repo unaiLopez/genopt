@@ -15,11 +15,11 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 logger = logging.getLogger('GENETIST')
 
 class Genetist:
-    def __init__(self, params, num_population=100, generations=100, cross_over_type='one_point', mutation_type='single_gene', prob_mutation=0.1, elite_rate=0.1, verbose=1):
+    def __init__(self, params, num_population=100, generations=100, crossover_type='one_point', mutation_type='single_gene', prob_mutation=0.1, elite_rate=0.1, verbose=1):
         self.params = params
         self.num_population = num_population
         self.generations = generations
-        self.cross_over_type = cross_over_type
+        self.crossover_type = crossover_type
         self.mutation_type = mutation_type
         self.prob_mutation = prob_mutation
         self.elite_rate = elite_rate
@@ -28,10 +28,8 @@ class Genetist:
         data_inference_object = DataTypeInference(self.params)
         self.search_space_type = data_inference_object.infer_search_space_type()
         self.params = data_inference_object.infer_param_types()
-        self.crossover = Crossover(self.cross_over_type, self.search_space_type)
+        self.crossover = Crossover(self.crossover_type, self.search_space_type)
         self.mutation = Mutation(self.mutation_type, self.prob_mutation, self.search_space_type, self.params)
-
-    
             
     def _initialize_population(self, objective):
         if self.verbose > 1: logger.info(f'Initializing population...')
@@ -41,7 +39,7 @@ class Genetist:
 
         return population
     
-    def _calculate_population_fitness(self, individuals):
+    def _calculate_population_fitness(self, individuals, n_jobs=1):
         if self.verbose > 1: logger.info(f'Calculating population fitness...')
         new_individuals = list()
         for individual in individuals:
@@ -62,7 +60,7 @@ class Genetist:
         return individuals
 
     def _choose_parents(self, individuals):
-        if self.verbose: logger.info(f'Selecting parents...')
+        if self.verbose > 1: logger.info(f'Selecting parents...')
         parents = list()
         weights = np.arange(len(individuals), 0, step=-1)
         number_of_parents = math.ceil(len(individuals) * (1 - self.elite_rate)) // 2
@@ -100,13 +98,8 @@ class Genetist:
         
         results = Results()
         individuals = self._initialize_population(objective)
-        print(individuals[0])
         individuals = self._calculate_population_fitness(individuals)
-        print(individuals[0])
-
         individuals = self._order_population_by_fitness(individuals, direction)
-        print(individuals[0])
-
         progress_bar = tqdm(range(0, self.generations))
         for generation in progress_bar:
             elite_individuals = self._get_elite(individuals)
@@ -121,7 +114,7 @@ class Genetist:
             results.add_generation_results(generation+1, best_score, best_individual)
             progress_bar.set_description(f'RUNNING GENERATION {generation + 1}')
             if self.verbose == 1:
-                logger.info(f'THE BEST SOLUTION IN GENERATION {generation+1} IS: {best_individual}')
+                logger.info(f'THE BEST SOLUTION IN GENERATION {generation+1} IS {best_individual} WITH A SCORE OF {best_score}')
 
         end_time = time.time()
 
