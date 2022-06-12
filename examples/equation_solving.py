@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../src/')
 
-from genetist import Genetist
+from environment import Environment
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
@@ -21,9 +21,9 @@ def objective(individual):
     return (x**2 - 4*y**3 / z**4) * k**3
 
 if __name__ == '__main__':
-    #defining our Genetist class with a population of 1000 individuals, 250 generation, one-point crossover 
+    #defining our Environment instance with a population of 1000 individuals, 250 generation, one-point crossover 
     #and a single gene mutation with a 25% probability of mutation
-    genetist = Genetist(
+    environment = Environment(
         params=params,
         num_population=1000,
         generations=250,
@@ -34,7 +34,7 @@ if __name__ == '__main__':
     )
 
     #minimizing the objective function
-    results = genetist.optimize(objective=objective, direction='minimize')
+    results = environment.optimize(objective=objective, direction='minimize')
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')

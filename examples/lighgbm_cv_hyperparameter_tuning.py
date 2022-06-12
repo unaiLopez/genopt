@@ -8,8 +8,9 @@ from lightgbm import LGBMRegressor
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error
 
-from genetist import Genetist
+from environment import Environment
 
+#defining a 5 variable search space to fine tune the model
 params = {
     'num_leaves': {'low': 2, 'high': 256},
     'max_depth': {'low': 3, 'high': 20},
@@ -18,6 +19,7 @@ params = {
     'objective': {'choices': ['regression', 'regression_l1']}
 }
 
+#defining an objective function
 def objective(individual):
     df = pd.read_csv('../datasets/california_housing.csv')
     df = pd.get_dummies(df, drop_first=True, dummy_na=True)
@@ -57,17 +59,20 @@ def objective(individual):
     return np.mean(maes)
 
 if __name__ == '__main__':
-    genetist = Genetist(
+    #defining our Environment instance with a population of 40 individuals, 15 generation, one-point crossover 
+    #and a single gene mutation with a 25% probability of mutation
+    environment = Environment(
         params=params,
         num_population=40,
-        generations=10,
+        generations=15,
         crossover_type='one_point',
         mutation_type='single_gene',
         prob_mutation=0.25,
         verbose=1
     )
 
-    results = genetist.optimize(objective=objective, direction='minimize', n_jobs=-1)
+    #minimizing the objective function using all the available cores
+    results = environment.optimize(objective=objective, direction='minimize', n_jobs=-1)
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')

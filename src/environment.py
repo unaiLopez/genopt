@@ -14,9 +14,9 @@ from datatype_inference import DataTypeInference
 from results import Results
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger('GENETIST')
+logger = logging.getLogger('ENVIRONMENT')
 
-class Genetist:
+class Environment:
     def __init__(self, params: dict, num_population: int = 100, generations: int = 100, crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1):
         self.params = params
         self.num_population = num_population

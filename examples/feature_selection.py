@@ -5,7 +5,7 @@ from tensorflow.keras.datasets import mnist
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
-from genetist import Genetist
+from environment import Environment
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
@@ -33,7 +33,7 @@ def objective(individual):
     return accuracy_score(y_test, predictions)
 
 if __name__ == '__main__':
-    genetist = Genetist(
+    environment = Environment(
         params=params,
         num_population=100,
         generations=25,
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         verbose=2
     )
 
-    results = genetist.optimize(objective=objective, direction='maximize')
+    results = environment.optimize(objective=objective, direction='maximize')
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')
