@@ -1,9 +1,9 @@
 class DataTypeInference:
-    def __init__(self, params):
+    def __init__(self, params: dict):
         self.params = params
         self.search_space_type = self.infer_search_space_type()
 
-    def infer_search_space_type(self):
+    def infer_search_space_type(self) -> str:
         key = list(self.params.keys())[0]
         if isinstance(self.params[key], dict):
             search_space_type = 'flexible_search'
@@ -14,7 +14,7 @@ class DataTypeInference:
     
         return search_space_type
     
-    def infer_param_types(self):
+    def infer_param_types(self) -> dict:
         if self.search_space_type == 'flexible_search':
             keys = list(self.params.keys())
             for key in keys:

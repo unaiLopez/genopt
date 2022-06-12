@@ -1,17 +1,19 @@
 import numpy as np
 
+from typing import Callable, Union
+
 class Individual:
-    def __init__(self, params, search_space_type, objective):
+    def __init__(self, params: dict, search_space_type: str, objective: Callable[[dict], Union[int,float]]):
         self.params = params
         self.search_space_type = search_space_type
         self.objective = objective
         self.genome = self._initialize_genome()
         self.fitness = None
     
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.genome)
     
-    def _initialize_genome(self):
+    def _initialize_genome(self) -> list:
         genome = list()
         if self.search_space_type == 'flexible_search':
             for _, values in self.params.items():
@@ -29,7 +31,7 @@ class Individual:
         
         return genome
     
-    def get_name_genome_genes(self):
+    def get_name_genome_genes(self) -> dict:
         genome_gene_names = {}
         names = list(self.params.keys())
         for name, gene in zip(names, self.genome):
@@ -37,14 +39,14 @@ class Individual:
         
         return genome_gene_names
     
-    def calculate_fitness(self):
+    def calculate_fitness(self) -> None:
         self.fitness = self.objective(self.get_name_genome_genes())
     
-    def get_genome(self):
+    def get_genome(self) -> list:
         return self.genome
     
-    def get_fitness(self):
+    def get_fitness(self) -> Union[int, float]:
         return self.fitness
     
-    def set_genome(self, genome):
+    def set_genome(self, genome: list) -> None:
         self.genome = genome

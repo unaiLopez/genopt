@@ -63,10 +63,11 @@ if __name__ == '__main__':
         generations=10,
         crossover_type='one_point',
         mutation_type='single_gene',
+        prob_mutation=0.25,
         verbose=1
     )
 
-    results = genetist.optimize(objective=objective, direction='minimize')
+    results = genetist.optimize(objective=objective, direction='minimize', n_jobs=-1)
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')

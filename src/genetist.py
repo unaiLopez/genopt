@@ -1,10 +1,12 @@
 import numpy as np
-from tqdm import tqdm
 import random
 import time
 import math
-
 import logging
+
+from typing import Callable, List, Tuple, Union
+from multiprocessing import Pool, cpu_count
+from tqdm import tqdm
 from crossover import Crossover
 from mutation import Mutation
 from individual import Individual
@@ -15,7 +17,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 logger = logging.getLogger('GENETIST')
 
 class Genetist:
-    def __init__(self, params, num_population=100, generations=100, crossover_type='one_point', mutation_type='single_gene', prob_mutation=0.1, elite_rate=0.1, verbose=1):
+    def __init__(self, params: dict, num_population: int = 100, generations: int = 100, crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1):
         self.params = params
         self.num_population = num_population
         self.generations = generations
@@ -31,7 +33,7 @@ class Genetist:
         self.crossover = Crossover(self.crossover_type, self.search_space_type)
         self.mutation = Mutation(self.mutation_type, self.prob_mutation, self.search_space_type, self.params)
             
-    def _initialize_population(self, objective):
+    def _initialize_population(self, objective: Callable[[dict], Union[int,float]]) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Initializing population...')
         population = list()
         for _ in range(self.num_population):
@@ -39,16 +41,25 @@ class Genetist:
 
         return population
     
-    def _calculate_population_fitness(self, individuals, n_jobs=1):
+    def _calculate_fitness_process(self, individual: Individual) -> Individual:
+        individual.calculate_fitness()
+        return individual
+
+    def _calculate_population_fitness(self, individuals: List[Individual], n_jobs: int = 1) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Calculating population fitness...')
-        new_individuals = list()
-        for individual in individuals:
-            individual.calculate_fitness()
-            new_individuals.append(individual)
+        if n_jobs == -1: n_jobs = cpu_count()
+
+        if n_jobs != 1:
+            pool = Pool(n_jobs)
+            new_individuals = pool.map(self._calculate_fitness_process, individuals)
+        else:
+            new_individuals = list()
+            for individual in individuals:
+                new_individuals.append(self._calculate_fitness_process(individual))
 
         return new_individuals
 
-    def _order_population_by_fitness(self, individuals, direction):
+    def _order_population_by_fitness(self, individuals: List[Individual], direction: str) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Ordering population by fitness...')
         if direction == 'maximize':
             individuals = sorted(individuals, key=lambda individual: individual.get_fitness(), reverse=True)
@@ -59,7 +70,7 @@ class Genetist:
 
         return individuals
 
-    def _choose_parents(self, individuals):
+    def _choose_parents(self, individuals: List[Individual]) -> List[Tuple[Individual, Individual]]:
         if self.verbose > 1: logger.info(f'Selecting parents...')
         parents = list()
         weights = np.arange(len(individuals), 0, step=-1)
@@ -75,7 +86,7 @@ class Genetist:
 
         return parents
 
-    def _run_crossover_with_mutation(self, best_parents):
+    def _run_crossover_with_mutation(self, best_parents: List[Tuple[Individual, Individual]]) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Running crossover with mutation...')
         childs = list()
         for parents in best_parents:
@@ -87,18 +98,18 @@ class Genetist:
 
         return childs
 
-    def _get_elite(self, individuals):
+    def _get_elite(self, individuals: List[Individual]) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Getting elite individuals...')
         elite = individuals[:math.ceil(len(individuals) * self.elite_rate)]
 
         return elite
     
-    def optimize(self, objective, direction):
+    def optimize(self, objective: Callable[[dict], Union[int,float]], direction: str, n_jobs: int = 1) -> Results:
         start_time = time.time()
         
         results = Results()
         individuals = self._initialize_population(objective)
-        individuals = self._calculate_population_fitness(individuals)
+        individuals = self._calculate_population_fitness(individuals, n_jobs)
         individuals = self._order_population_by_fitness(individuals, direction)
         progress_bar = tqdm(range(0, self.generations))
         for generation in progress_bar:
@@ -106,20 +117,20 @@ class Genetist:
             parents = self._choose_parents(individuals)
             individuals = self._run_crossover_with_mutation(parents)
             individuals.extend(elite_individuals)
-            individuals = self._calculate_population_fitness(individuals)
+            individuals = self._calculate_population_fitness(individuals, n_jobs)
             individuals = self._order_population_by_fitness(individuals, direction)
             best_individual = individuals[0].get_name_genome_genes()
             best_score = individuals[0].get_fitness()
 
             results.add_generation_results(generation+1, best_score, best_individual)
             progress_bar.set_description(f'RUNNING GENERATION {generation + 1}')
-            if self.verbose == 1:
+            if self.verbose >= 1:
                 logger.info(f'THE BEST SOLUTION IN GENERATION {generation+1} IS {best_individual} WITH A SCORE OF {best_score}')
 
         end_time = time.time()
 
         results.set_execution_time(end_time - start_time)
-        results.sort_best_per_generation_dataframe(column='BEST_SCORE', direction=direction)
+        results.sort_best_per_generation_dataframe(column='best_score', direction=direction)
         results.get_best_score()
         results.get_best_individual()
             
