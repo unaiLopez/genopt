@@ -11,13 +11,14 @@ INSTALL_REQUIRES = [
 
 if __name__ == '__main__':
     setup(
-        name='darwin',
-        description='darwin: optimization with genetic algorithms',
+        name='genetist',
+        description='Genetist: optimization with genetic algorithms',
         long_description=long_description,
+        version=0.0,
         long_description_content_type='text/markdown',
         author='Unai Lopez Ansoleaga',
         author_email='unai19970315@gmail.com',
-        uurl='https://github.com/unaiLopez/darwin',
+        url='https://github.com/unaiLopez/genetist',
         license='MIT',
         package_dir={'': 'src'},
         packages=find_packages('src'),
