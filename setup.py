@@ -4,7 +4,7 @@ with open('README.md') as f:
     long_description = f.read()
 
 INSTALL_REQUIRES = [
-    'numpy==1.22',
+    'numpy==1.19.0',
     'tqdm==4.4.1',
     'pandas==1.1.5',
 ]
