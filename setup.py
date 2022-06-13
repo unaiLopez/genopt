@@ -14,7 +14,7 @@ if __name__ == '__main__':
         name='genetist',
         description='Genetist: optimization with genetic algorithms',
         long_description=long_description,
-        version='0.0.0',
+        version='0.9.0',
         long_description_content_type='text/markdown',
         author='Unai Lopez Ansoleaga',
         author_email='unai19970315@gmail.com',
