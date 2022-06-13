@@ -8,7 +8,7 @@ from lightgbm import LGBMRegressor
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error
 
-from environment import Environment
+from genetist.environment import Environment
 
 #defining a 5 variable search space to fine tune the model
 params = {

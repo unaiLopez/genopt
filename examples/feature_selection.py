@@ -5,7 +5,7 @@ from tensorflow.keras.datasets import mnist
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
-from environment import Environment
+from genetist.environment import Environment
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 

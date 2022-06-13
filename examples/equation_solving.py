@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../src/')
 
-from environment import Environment
+from genetist.environment import Environment
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
