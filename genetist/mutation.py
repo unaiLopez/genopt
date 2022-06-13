@@ -1,6 +1,6 @@
 import numpy as np
 
-from individual import Individual
+from genetist.individual import Individual
 
 class Mutation:
     def __init__(self, mutation_type: str, prob_mutation: float, search_space_type: str, params: dict):

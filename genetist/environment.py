@@ -7,11 +7,11 @@ import logging
 from typing import Callable, List, Tuple, Union
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
-from crossover import Crossover
-from mutation import Mutation
-from individual import Individual
-from datatype_inference import DataTypeInference
-from results import Results
+from genetist.crossover import Crossover
+from genetist.mutation import Mutation
+from genetist.individual import Individual
+from genetist.datatype_inference import DataTypeInference
+from genetist.results import Results
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('ENVIRONMENT')

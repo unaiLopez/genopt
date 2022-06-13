@@ -2,7 +2,7 @@ import numpy as np
 
 from copy import copy
 from typing import Tuple
-from individual import Individual
+from genetist.individual import Individual
 
 class Crossover:
     def __init__(self, crossover_type: str, search_space_type: str):
