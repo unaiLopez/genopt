@@ -1,14 +1,13 @@
 
 import numpy as np
 import pandas as pd
-import sys
-sys.path.append('../src/')
+
 
 from lightgbm import LGBMRegressor
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error
 
-from genetist.environment import Environment
+from genetist.environment import Environment #pip install genetist
 
 #defining a 5 variable search space to fine tune the model
 params = {

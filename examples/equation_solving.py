@@ -1,7 +1,4 @@
-import sys
-sys.path.append('../src/')
-
-from genetist.environment import Environment
+from genetist.environment import Environment #pip install genetist
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {

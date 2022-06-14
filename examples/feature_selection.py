@@ -1,11 +1,8 @@
-import sys
-sys.path.append('../src/')
-
 from tensorflow.keras.datasets import mnist
 from sklearn.metrics import accuracy_score
 from sklearn.tree import DecisionTreeClassifier
 
-from genetist.environment import Environment
+from genetist.environment import Environment #pip install genetist
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
