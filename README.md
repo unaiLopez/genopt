@@ -6,3 +6,10 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Genetist is a high level framework that helps optimizing functions using the power of genetic algorithms.
+
+## Installation
+You can easily install genetist by using pip on your prompt:
+```
+pip install genetist
+```
+## Quickstart
