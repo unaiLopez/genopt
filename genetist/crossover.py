@@ -5,9 +5,8 @@ from typing import Tuple
 from genetist.individual import Individual
 
 class Crossover:
-    def __init__(self, crossover_type: str, search_space_type: str):
+    def __init__(self, crossover_type: str):
         self.crossover_type = crossover_type
-        self.search_space_type = search_space_type
 
     def _one_point_crossover(self, parent_1: Individual, parent_2: Individual) -> Tuple[Individual, Individual]:
         point = np.random.randint(1, len(parent_1) - 1)

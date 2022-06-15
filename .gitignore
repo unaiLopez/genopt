@@ -4,3 +4,4 @@ venv/
 dist/
 genetist.egg-info/
 build/
+.pytest_cache/

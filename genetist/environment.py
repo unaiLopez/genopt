@@ -27,10 +27,8 @@ class Environment:
         self.elite_rate = elite_rate
         self.verbose = verbose
 
-        data_inference_object = DataTypeInference(self.params)
-        self.search_space_type = data_inference_object.infer_search_space_type()
-        self.params = data_inference_object.infer_param_types()
-        self.crossover = Crossover(self.crossover_type, self.search_space_type)
+        self.search_space_type = DataTypeInference.infer_search_space_type(params)
+        self.crossover = Crossover(self.crossover_type)
         self.mutation = Mutation(self.mutation_type, self.prob_mutation, self.search_space_type, self.params)
             
     def _initialize_population(self, objective: Callable[[dict], Union[int,float]]) -> List[Individual]:

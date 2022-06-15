@@ -1,4 +1,4 @@
-from setuptools import find_packages, setup
+from setuptools import setup
 
 with open('README.md') as f:
     long_description = f.read()
@@ -9,7 +9,7 @@ INSTALL_REQUIRES = [
     'pandas==1.3.4',
 ]
 
-VERSION = '0.9.3'
+VERSION = '0.9.8'
 
 if __name__ == '__main__':
     setup(

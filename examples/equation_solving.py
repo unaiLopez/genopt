@@ -1,11 +1,22 @@
+import numpy as np
+
 from genetist.environment import Environment #pip install genetist
+from genetist.params import Params
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
-    'x': {'low': -100.0, 'high': 100.0},
-    'y': {'low': -100.0, 'high': 100.0},
-    'z': {'low': -100.0, 'high': 100.0},
-    'k': {'low': -100.0, 'high': 100.0}
+    'x': Params.suggest_int(-100, 100),
+    'y': Params.suggest_int(-100, 100),
+    'z': Params.suggest_int(-100, 100),
+    'k': Params.suggest_int(-100, 100)
+}
+
+#defining a fixed set of params for 4 variables
+params = {
+    'x': np.arange(-100, 100),
+    'y': np.arange(-100, 100),
+    'z': np.arange(-100, 100),
+    'k': np.arange(-100, 100)
 }
 
 #defining an objective function
