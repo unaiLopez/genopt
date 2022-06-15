@@ -39,8 +39,8 @@ if __name__ == '__main__':
     #one-point crossover and a single gene mutation with a 25% probability of mutation
     environment = Environment(
         params=params,
-        num_population=50,
-        generations=25,
+        num_population=1000,
+        generations=250,
         crossover_type='one_point',
         mutation_type='single_gene',
         prob_mutation=0.25,
@@ -57,30 +57,3 @@ if __name__ == '__main__':
     print('BEST PER GENERATION:')
     print(results.best_per_generation_dataframe)
 ```
-|    |   generation |     best_score |   x |   y |   z |   k |
-|---:|-------------:|---------------:|----:|----:|----:|----:|
-|  0 |           13 | -inf           |  97 | -86 |   0 | -97 |
-|  0 |           23 | -inf           |   7 | -17 |   0 | -48 |
-|  0 |           22 | -inf           |  97 | -39 |   0 | -97 |
-|  0 |           21 | -inf           |  47 | -17 |   0 | -42 |
-|  0 |           20 | -inf           |   7 | -17 |   0 | -97 |
-|  0 |           19 | -inf           | -93 | -32 |   0 | -97 |
-|  0 |           18 | -inf           |  97 | -32 |   0 | -42 |
-|  0 |           17 | -inf           |  97 | -17 |   0 | -97 |
-|  0 |           16 | -inf           |  67 | -19 |   0 | -97 |
-|  0 |           15 | -inf           |  26 | -41 |   0 | -97 |
-|  0 |           14 | -inf           |  97 | -79 |   0 | -97 |
-|  0 |           24 | -inf           |  35 | -17 |   0 | -48 |
-|  0 |           25 | -inf           | -27 | -39 |   0 | -48 |
-|  0 |           11 | -inf           |  97 | -32 |   0 | -97 |
-|  0 |           10 | -inf           |  29 | -39 |   0 | -97 |
-|  0 |            9 | -inf           |  67 | -39 |   0 | -97 |
-|  0 |            8 | -inf           |  97 | -39 |   0 | -97 |
-|  0 |            7 | -inf           |  67 | -41 |   0 | -97 |
-|  0 |            6 | -inf           |  97 | -71 |   0 | -97 |
-|  0 |            5 | -inf           |  88 | -41 |   0 | -97 |
-|  0 |            4 | -inf           |  67 | -39 |   0 | -97 |
-|  0 |            3 | -inf           |  67 | -39 |   0 | -97 |
-|  0 |           12 | -inf           |  97 | -39 |   0 | -97 |
-|  0 |            2 |   -7.06774e+09 |  88 |   2 |  42 | -97 |
-|  0 |            1 |   -7.06774e+09 |  88 |   2 |  42 | -97 |
