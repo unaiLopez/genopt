@@ -17,7 +17,7 @@ $ pip install genetist
 ```python
 import numpy as np
 
-from genetist.environment import Environment #pip install genetist
+from genetist.environment import Environment
 from genetist.params import Params
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
@@ -46,8 +46,8 @@ def objective(individual):
     return (x**2 - 4*y**3 / z**4) * k**3
 
 if __name__ == '__main__':
-    #defining our Environment instance with a population of 1000 individuals, 250 generation, one-point crossover 
-    #and a single gene mutation with a 25% probability of mutation
+    #defining our Environment instance with a population of 1000 individuals, 250 generation, 
+    #one-point crossover and a single gene mutation with a 25% probability of mutation
     environment = Environment(
         params=params,
         num_population=1000,
