@@ -13,7 +13,8 @@ Genetist is available at [PyPI](https://pypi.org/project/genetist/)
 $ pip install genetist
 ```
 ## Quickstart
-´´´python
+
+```python
 from genetist.environment import Environment
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
@@ -55,4 +56,4 @@ if __name__ == '__main__':
     print(f'BEST INDIVIDUAL={results.best_individual}')
     print('BEST PER GENERATION:')
     print(results.best_per_generation_dataframe)
-´´´
+```
