@@ -46,7 +46,6 @@ class Environment:
     def _calculate_population_fitness(self, individuals: List[Individual], n_jobs: int = 1) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Calculating population fitness...')
         if n_jobs == -1: n_jobs = cpu_count()
-
         if n_jobs != 1:
             pool = Pool(n_jobs)
             new_individuals = pool.map(self._calculate_fitness_process, individuals)
