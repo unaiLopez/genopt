@@ -35,16 +35,14 @@ if __name__ == '__main__':
     #one-point crossover and a single gene mutation with a 25% probability of mutation
     environment = Environment(
         params=params,
-        num_population=1000,
-        generations=250,
+        num_population=10,
         crossover_type='one-point',
         mutation_type='single-gene',
         prob_mutation=0.25,
-        verbose=0
+        verbose=1
     )
-
     #minimizing the objective function
-    results = environment.optimize(objective=objective, direction='minimize')
+    results = environment.optimize(objective=objective, direction='minimize', num_generations=2, timeout=5, stop_score=-np.inf)
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')
