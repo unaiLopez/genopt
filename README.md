@@ -16,14 +16,12 @@ $ pip install genetist
 ### 2.1. Define Search Space
 #### 2.1.1. Fixed Search Space
 ```python
-import numpy as np
-
 #defining a fixed set of params for 4 variables
 params = {
-    'x': np.arange(-100, 100),
-    'y': np.arange(-100, 100),
-    'z': np.arange(-100, 100),
-    'k': np.arange(-100, 100)
+    'x': [35, -51, 0, 1, 2, 3, 4, 66, 11, 50, 90],
+    'y': [-100, -51, 0, 7, 32, 31, 4, 51, 121, 50, 90, 1000, 231]
+    'z': [-10, -51, 0, 12, 2, 43, 43, 5, 1231, 50, 90],
+    'k': [-56, -51, 0, 1, 2, 13, 4, 5, 11, 50, 90]
 }
 ```
 #### 2.1.2. Flexible Search Space
