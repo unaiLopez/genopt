@@ -18,7 +18,7 @@ class Individual:
         if self.search_space_type == 'flexible_search':
             for _, values in self.params.items():
                 if values['type'] == 'int':
-                    genome.append(np.random.random_integers(values['low'], values['high']))
+                    genome.append(np.random.randint(values['low'], values['high'] + 1))
                 elif values['type'] == 'float':
                     genome.append(np.random.uniform(values['low'], values['high']))
                 elif values['type'] == 'categorical':

@@ -73,8 +73,8 @@ if __name__ == '__main__':
         params=params,
         num_population=40,
         generations=15,
-        crossover_type='one_point',
-        mutation_type='single_gene',
+        crossover_type='one-point',
+        mutation_type='single-gene',
         prob_mutation=0.25,
         verbose=1
     )

@@ -58,5 +58,5 @@ class TestParams(unittest.TestCase):
         with self.assertRaises(Exception):
             Params.suggest_categorical(['hello', 'hey', list()])
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     unittest.main()

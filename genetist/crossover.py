@@ -61,11 +61,11 @@ class Crossover:
         
 
     def crossover(self, parent_1: Individual, parent_2: Individual) -> Tuple[Individual, Individual]:
-        if self.crossover_type == 'one_point':
+        if self.crossover_type == 'one-point':
             return self._one_point_crossover(parent_1, parent_2)
-        elif self.crossover_type == 'two_point':
+        elif self.crossover_type == 'two-point':
             return self._two_point_crossover(parent_1, parent_2)
-        elif self.crossover_type == 'three_point':
+        elif self.crossover_type == 'three-point':
             return self._three_point_crossover(parent_1, parent_2)
         else:
             raise Exception(f'Crossover {self.crossover_type} not supported.')

@@ -34,8 +34,8 @@ if __name__ == '__main__':
         params=params,
         num_population=100,
         generations=25,
-        crossover_type='three_point',
-        mutation_type='single_gene',
+        crossover_type='three-point',
+        mutation_type='single-gene',
         prob_mutation=0.25,
         verbose=2
     )
