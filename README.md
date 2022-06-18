@@ -7,15 +7,17 @@
 
 Genetist is a high level framework that helps optimizing functions using the power of genetic algorithms.
 
-## Installation
+## 1. Installation
 Genetist is available at [PyPI](https://pypi.org/project/genetist/)
 ```
 $ pip install genetist
 ```
-## Quickstart
-### Define Search Space
-#### Fixed Search Space
+## 2. Quickstart
+### 2.1. Define Search Space
+#### 2.1.1. Fixed Search Space
 ```python
+import numpy as np
+
 #defining a fixed set of params for 4 variables
 params = {
     'x': np.arange(-100, 100),
@@ -24,7 +26,7 @@ params = {
     'k': np.arange(-100, 100)
 }
 ```
-#### Flexible Search Space
+#### 2.1.2. Flexible Search Space
 ```python
 from genetist.params import Params
 
@@ -36,7 +38,7 @@ params = {
     'k': Params.suggest_int(-100, 100)
 }
 ```
-### Define Objective Function
+### 2.2. Define Objective Function
 ```python
 #defining an objective function
 def objective(individual):
@@ -47,8 +49,10 @@ def objective(individual):
     
     return (x**2 - 4*y**3 / z**4) * k**3
 ```
-### Start Optimization
+### 2.3. Start Optimization
 ```python
+from genetist.environment import Environment
+
 if __name__ == '__main__':
     #defining our Environment instance with a population of 1000 individuals, 250 generation, 
     #one-point crossover and a single gene mutation with a 25% probability of mutation
@@ -65,7 +69,7 @@ if __name__ == '__main__':
     #minimizing the objective function
     results = environment.optimize(objective=objective, direction='minimize')
 ```
-### Show Optimization  Results
+### 2.4. Show Optimization  Results
 ```python
 print()
 print(f'EXECUTION TIME={results.execution_time}')
