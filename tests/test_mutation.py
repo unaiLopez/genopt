@@ -58,6 +58,7 @@ class TestMutation(unittest.TestCase):
             mutated_genome = self.single_gene_mutation_flexible_search._mutate_flexible_categorical_param(child_genome, gene_index, param)
             if mutated_genome[gene_index] == 'hello':
                 failures.append(i)
+
         self.assertEqual(failures, list())
     
     def test_mutate_flexible_categorical_non_binary_param(self):
@@ -69,6 +70,7 @@ class TestMutation(unittest.TestCase):
             mutated_genome = self.single_gene_mutation_flexible_search_multiple_categoricals._mutate_flexible_categorical_param(child_genome, gene_index, param)
             if mutated_genome[gene_index] == 'hello':
                 failures.append(i)
+                
         self.assertEqual(failures, list())
 
     def test_mutate_fixed_non_binary_param(self):

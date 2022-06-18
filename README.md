@@ -63,11 +63,16 @@ if __name__ == '__main__':
         verbose=1
     )
     #minimizing the objective function and adding 3 stop criterias (num_generations, timeout, stop_score)
-    results = environment.optimize(objective=objective, direction='minimize', num_generations=9999, timeout=60, stop_score=-np.inf)
+    results = environment.optimize(
+        objective=objective,
+        direction='minimize',
+        num_generations=9999,
+        timeout=60,
+        stop_score=-np.inf
+    )
 ```
 ### 2.4. Show Optimization  Results
 ```python
-print()
 print(f'EXECUTION TIME={results.execution_time}')
 print(f'BEST SCORE={results.best_score}')
 print(f'BEST INDIVIDUAL={results.best_individual}')
