@@ -62,7 +62,8 @@ if __name__ == '__main__':
         prob_mutation=0.25,
         verbose=1
     )
-    #minimizing the objective function and adding 3 stop criterias (num_generations, timeout, stop_score)
+    #minimizing the objective function and adding 
+    #3 stop criterias (num_generations, timeout, stop_score)
     results = environment.optimize(
         objective=objective,
         direction='minimize',
