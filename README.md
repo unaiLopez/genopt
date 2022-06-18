@@ -13,11 +13,19 @@ Genetist is available at [PyPI](https://pypi.org/project/genetist/)
 $ pip install genetist
 ```
 ## Quickstart
-
+### Define Search Space
+#### Fixed Search Space
 ```python
-import numpy as np
-
-from genetist.environment import Environment
+#defining a fixed set of params for 4 variables
+params = {
+    'x': np.arange(-100, 100),
+    'y': np.arange(-100, 100),
+    'z': np.arange(-100, 100),
+    'k': np.arange(-100, 100)
+}
+```
+#### Flexible Search Space
+```python
 from genetist.params import Params
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
@@ -27,15 +35,9 @@ params = {
     'z': Params.suggest_int(-100, 100),
     'k': Params.suggest_int(-100, 100)
 }
-
-#defining a fixed set of params for 4 variables
-params = {
-    'x': np.arange(-100, 100),
-    'y': np.arange(-100, 100),
-    'z': np.arange(-100, 100),
-    'k': np.arange(-100, 100)
-}
-
+```
+### Define Objective Function
+```python
 #defining an objective function
 def objective(individual):
     x = individual['x']
@@ -44,7 +46,9 @@ def objective(individual):
     k = individual['k']
     
     return (x**2 - 4*y**3 / z**4) * k**3
-
+```
+### Start Optimization
+```python
 if __name__ == '__main__':
     #defining our Environment instance with a population of 1000 individuals, 250 generation, 
     #one-point crossover and a single gene mutation with a 25% probability of mutation
@@ -60,11 +64,13 @@ if __name__ == '__main__':
 
     #minimizing the objective function
     results = environment.optimize(objective=objective, direction='minimize')
-
-    print()
-    print(f'EXECUTION TIME={results.execution_time}')
-    print(f'BEST SCORE={results.best_score}')
-    print(f'BEST INDIVIDUAL={results.best_individual}')
-    print('BEST PER GENERATION:')
-    print(results.best_per_generation_dataframe)
+```
+### Show Optimization  Results
+```python
+print()
+print(f'EXECUTION TIME={results.execution_time}')
+print(f'BEST SCORE={results.best_score}')
+print(f'BEST INDIVIDUAL={results.best_individual}')
+print('BEST PER GENERATION:')
+print(results.best_per_generation_dataframe)
 ```
