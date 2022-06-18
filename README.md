@@ -30,10 +30,10 @@ from genetist.params import Params
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
-    'x': Params.suggest_int(-100, 100),
-    'y': Params.suggest_int(-100, 100),
-    'z': Params.suggest_int(-100, 100),
-    'k': Params.suggest_int(-100, 100)
+    'x': Params.suggest_float(-100, 100),
+    'y': Params.suggest_float(-100, 100),
+    'z': Params.suggest_float(-100, 100),
+    'k': Params.suggest_float(-100, 100)
 }
 ```
 ### 2.2. Define Objective Function
@@ -52,20 +52,18 @@ def objective(individual):
 from genetist.environment import Environment
 
 if __name__ == '__main__':
-    #defining our Environment instance with a population of 1000 individuals, 250 generation, 
+    #defining our Environment instance with a population of 100 individuals,
     #one-point crossover and a single gene mutation with a 25% probability of mutation
     environment = Environment(
         params=params,
-        num_population=1000,
-        generations=250,
-        crossover_type='one_point',
-        mutation_type='single_gene',
+        num_population=100,
+        crossover_type='one-point',
+        mutation_type='single-gene',
         prob_mutation=0.25,
-        verbose=0
+        verbose=1
     )
-
-    #minimizing the objective function
-    results = environment.optimize(objective=objective, direction='minimize')
+    #minimizing the objective function and adding 3 stop criterias (num_generations, timeout, stop_score)
+    results = environment.optimize(objective=objective, direction='minimize', num_generations=9999, timeout=60, stop_score=-np.inf)
 ```
 ### 2.4. Show Optimization  Results
 ```python
