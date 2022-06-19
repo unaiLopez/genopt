@@ -33,7 +33,7 @@ if __name__ == '__main__':
         verbose=1
     )
     #minimizing the objective function and adding 3 stop criterias (num_generations, timeout, stop_score)
-    results = environment.optimize(objective=objective, direction='minimize', num_generations=9999, timeout=60, stop_score=-np.inf)
+    results = environment.optimize(objective=objective, direction='minimize', timeout=60)
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')

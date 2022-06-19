@@ -198,10 +198,11 @@ class Environment:
                 break
 
         end_time = time.time()
-        results.set_execution_time(end_time - start_time)
+        results.execution_time = end_time - start_time
+        results.best_score = best_score
+        results.best_individual = best_individual
         results.sort_best_per_generation_dataframe(column='best_score', direction=direction)
-        results.get_best_score()
-        results.get_best_individual()
+
             
         return results
 
