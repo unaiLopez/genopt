@@ -3,6 +3,8 @@ import numpy as np
 from genetist.individual import Individual
 
 class Mutation:
+    __instance = None
+
     @staticmethod
     def getInstance(mutation_type: str, prob_mutation: float, search_space_type: str, params: dict):
         if Mutation.__instance == None:
