@@ -6,7 +6,6 @@ import logging
 
 from typing import Callable, List, Tuple, Union
 from multiprocessing import Pool, cpu_count
-from tqdm import tqdm
 from genetist.crossover import Crossover
 from genetist.mutation import Mutation
 from genetist.individual import Individual
@@ -14,6 +13,7 @@ from genetist.datatype_inference import DataTypeInference
 from genetist.results import Results
 
 MAX_GENERATIONS = 999999999999
+MAX_ATTEMPS_PER_INDIVIDUAL = 5
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('ENVIRONMENT')
 
@@ -26,15 +26,37 @@ class Environment:
         self.prob_mutation = prob_mutation
         self.elite_rate = elite_rate
         self.verbose = verbose
+        self.history_genomes = set()
 
         self.search_space_type = DataTypeInference.infer_search_space_type(params)
+
+    def _is_in_history(self, individual: Individual) -> bool:
+        if tuple(individual.genome) in self.history_genomes:
+            return False
+        else:
+            return True
+    
+    def _add_individual_in_history(self, individual: Individual) -> None:
+        self.history_genomes.add(tuple(individual.genome))
+    
+    def _create_individual_checking_duplicates(self, objective):
+        attemps = 0
+        keep = True
+        while keep:
+            attemps += 1
+            individual = Individual(self.params, self.search_space_type, objective)
+            individual.initialize_genome()
+            if self._is_in_history(individual) == False or attemps == MAX_ATTEMPS_PER_INDIVIDUAL:
+                self._add_individual_in_history(individual)
+                keep = False
+
+        return individual
             
     def _initialize_population(self, objective: Callable[[dict], Union[int,float]]) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Initializing population...')
         population = list()
         for _ in range(self.num_population):
-            individual = Individual(self.params, self.search_space_type, objective)
-            individual.initialize_genome()
+            individual = self._create_individual_checking_duplicates(objective)
             population.append(individual)
 
         return population

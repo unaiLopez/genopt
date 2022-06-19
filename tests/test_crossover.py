@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
 from genetist.crossover import Crossover
 
@@ -10,34 +10,33 @@ class TestCrossover(unittest.TestCase):
         self.three_point_crossover = Crossover('three-point')
         self.not_supported_crossover = Crossover('unknown')
 
-        self.mock_individual_1 = Mock()
-        self.mock_individual_2 = Mock()
-        self.mock_individual_1_short_genome = Mock()
-        self.mock_individual_2_short_genome = Mock()
-        self.mock_individual_1.__len__ = Mock(return_value=4)
-        self.mock_individual_2.__len__ = Mock(return_value=4)
-        self.mock_individual_1_short_genome.__len__ = Mock(return_value=1)
-        self.mock_individual_2_short_genome.__len__ = Mock(return_value=1)
-        self.mock_individual_1.get_genome = Mock(return_value=[1, 3, 10, 2])
-        self.mock_individual_2.get_genome = Mock(return_value=[7, 1, 31, 1])
-        self.mock_individual_1_short_genome.get_genome = Mock(return_value=[1])
-        self.mock_individual_2_short_genome.get_genome = Mock(return_value=[7])
+        self.mock_individual_1 = MagicMock()
+        self.mock_individual_2 = MagicMock()
+        self.mock_individual_1_short_genome = MagicMock()
+        self.mock_individual_2_short_genome = MagicMock()
+        self.mock_individual_1.__len__ = MagicMock(return_value=4)
+        self.mock_individual_2.__len__ = MagicMock(return_value=4)
+        self.mock_individual_1_short_genome.__len__ = MagicMock(return_value=1)
+        self.mock_individual_2_short_genome.__len__ = MagicMock(return_value=1)
+        self.mock_individual_1.genome = MagicMock(return_value=[1, 3, 10, 2])
+        self.mock_individual_2.genome = MagicMock(return_value=[7, 1, 31, 1])
+        self.mock_individual_1_short_genome.genome = MagicMock(return_value=[1])
+        self.mock_individual_2_short_genome.genome = MagicMock(return_value=[7])
 
-
-    def test_one_point_crossover_succesfull(self):
+    def test_one_point_crossover(self):
         child_1, child_2 = self.one_point_crossover._one_point_crossover(self.mock_individual_1, self.mock_individual_2)
-        self.assertTrue(isinstance(child_1.get_genome(), list))
-        self.assertTrue(isinstance(child_2.get_genome(), list))
+        self.assertTrue(isinstance(child_1.genome.return_value, list))
+        self.assertTrue(isinstance(child_2.genome.return_value, list))
 
-    def test_two_point_crossover_succesfull(self):
+    def test_two_point_crossover(self):
         child_1, child_2 = self.one_point_crossover._one_point_crossover(self.mock_individual_1, self.mock_individual_2)
-        self.assertTrue(isinstance(child_1.get_genome(), list))
-        self.assertTrue(isinstance(child_2.get_genome(), list))
+        self.assertTrue(isinstance(child_1.genome.return_value, list))
+        self.assertTrue(isinstance(child_2.genome.return_value, list))
     
-    def test_crossover_succesfull(self):
+    def test_crossover(self):
         child_1, child_2 = self.one_point_crossover.crossover(self.mock_individual_1, self.mock_individual_2)
-        self.assertTrue(isinstance(child_1.get_genome(), list))
-        self.assertTrue(isinstance(child_2.get_genome(), list))
+        self.assertTrue(isinstance(child_1.genome.return_value, list))
+        self.assertTrue(isinstance(child_2.genome.return_value, list))
 
     def test_two_point_crossover_fails_for_genome_shorter_than_two_genes(self):
         with self.assertRaises(Exception):
