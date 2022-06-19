@@ -5,18 +5,27 @@ from typing import Tuple
 from genetist.individual import Individual
 
 class Crossover:
+    __instance = None
+
+    @staticmethod
+    def getInstance(crossover_type: str):
+        if Crossover.__instance == None:
+            Crossover(crossover_type)
+        return Crossover.__instance 
+
     def __init__(self, crossover_type: str):
+        Crossover.__instance = self
         self.crossover_type = crossover_type
 
     def _one_point_crossover(self, parent_1: Individual, parent_2: Individual) -> Tuple[Individual, Individual]:
         point = np.random.randint(1, len(parent_1) - 1)
         
-        child_1_genome = parent_1.get_genome()[:point] + parent_2.get_genome()[point:]
-        child_2_genome = parent_2.get_genome()[:point] + parent_1.get_genome()[point:]
+        child_1_genome = parent_1.genome[:point] + parent_2.genome[point:]
+        child_2_genome = parent_2.genome[:point] + parent_1.genome[point:]
         child_1 = copy(parent_1)
         child_2 = copy(parent_2)
-        child_1.set_genome(child_1_genome)
-        child_2.set_genome(child_2_genome)
+        child_1.genome = child_1_genome
+        child_2.genome = child_2_genome
         
         return child_1, child_2
         
@@ -29,13 +38,13 @@ class Crossover:
             point_1 = points[0]
             point_2 = points[1]
             
-            child_1_genome = parent_1.get_genome()[:point_1] + parent_2.get_genome()[point_1:point_2] + parent_1.get_genome()[point_2:]
-            child_2_genome = parent_2.get_genome()[:point_1] + parent_1.get_genome()[point_1:point_2] + parent_2.get_genome()[point_2:]
+            child_1_genome = parent_1.genome[:point_1] + parent_2.genome[point_1:point_2] + parent_1.genome[point_2:]
+            child_2_genome = parent_2.genome[:point_1] + parent_1.genome[point_1:point_2] + parent_2.genome[point_2:]
 
             child_1 = copy(parent_1)
             child_2 = copy(parent_2)
-            child_1.set_genome(child_1_genome)
-            child_2.set_genome(child_2_genome)
+            child_1.genome = child_1_genome
+            child_2.genome = child_2_genome
         
         return child_1, child_2
     
@@ -49,13 +58,13 @@ class Crossover:
             point_2 = points[1]
             point_3 = points[2]
 
-            child_1_genome = parent_1.get_genome()[:point_1] + parent_2.get_genome()[point_1:point_2] + parent_1.get_genome()[point_2:point_3] +  parent_2.get_genome()[point_3:]
-            child_2_genome = parent_2.get_genome()[:point_1] + parent_1.get_genome()[point_1:point_2] + parent_2.get_genome()[point_2:point_3] +  parent_1.get_genome()[point_3:]
+            child_1_genome = parent_1.genome[:point_1] + parent_2.genome[point_1:point_2] + parent_1.genome[point_2:point_3] +  parent_2.genome[point_3:]
+            child_2_genome = parent_2.genome[:point_1] + parent_1.genome[point_1:point_2] + parent_2.genome[point_2:point_3] +  parent_1.genome[point_3:]
 
             child_1 = copy(parent_1)
             child_2 = copy(parent_2)
-            child_1.set_genome(child_1_genome)
-            child_2.set_genome(child_2_genome)
+            child_1.genome = child_1_genome
+            child_2.genome = child_2_genome
         
         return child_1, child_2
         

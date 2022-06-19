@@ -28,14 +28,14 @@ class Environment:
         self.verbose = verbose
 
         self.search_space_type = DataTypeInference.infer_search_space_type(params)
-        self.crossover = Crossover(self.crossover_type)
-        self.mutation = Mutation(self.mutation_type, self.prob_mutation, self.search_space_type, self.params)
             
     def _initialize_population(self, objective: Callable[[dict], Union[int,float]]) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Initializing population...')
         population = list()
         for _ in range(self.num_population):
-            population.append(Individual(self.params, self.search_space_type, objective))
+            individual = Individual(self.params, self.search_space_type, objective)
+            individual.initialize_genome()
+            population.append(individual)
 
         return population
     
@@ -59,9 +59,9 @@ class Environment:
     def _order_population_by_fitness(self, individuals: List[Individual], direction: str) -> List[Individual]:
         if self.verbose > 1: logger.info(f'Ordering population by fitness...')
         if direction == 'maximize':
-            individuals = sorted(individuals, key=lambda individual: individual.get_fitness(), reverse=True)
+            individuals = sorted(individuals, key=lambda individual: individual.fitness, reverse=True)
         elif direction == 'minimize':
-            individuals = sorted(individuals, key=lambda individual: individual.get_fitness())
+            individuals = sorted(individuals, key=lambda individual: individual.fitness)
         else:
             raise Exception(f'Direction {direction} not supported.')
 
@@ -84,12 +84,14 @@ class Environment:
         return parents
 
     def _run_crossover_with_mutation(self, best_parents: List[Tuple[Individual, Individual]]) -> List[Individual]:
+        crossover =  Crossover.getInstance(self.crossover_type)
+        mutation = Mutation.getInstance(self.mutation_type, self.prob_mutation, self.search_space_type, self.params)
         if self.verbose > 1: logger.info(f'Running crossover with mutation...')
         childs = list()
         for parents in best_parents:
-            child_1, child_2 = self.crossover.crossover(parents[0], parents[1])
-            child_1 = self.mutation.mutate(child_1)
-            child_2 = self.mutation.mutate(child_2)
+            child_1, child_2 = crossover.crossover(parents[0], parents[1])
+            child_1 = mutation.mutate(child_1)
+            child_2 = mutation.mutate(child_2)
             childs.append(child_1)
             childs.append(child_2)
 
@@ -155,7 +157,7 @@ class Environment:
             individuals = self._calculate_population_fitness(individuals, n_jobs)
             individuals = self._order_population_by_fitness(individuals, direction)
             best_individual = individuals[0].get_name_genome_genes()
-            best_score = individuals[0].get_fitness()
+            best_score = individuals[0].fitness
             results.add_generation_results(generation+1, best_score, best_individual)
             
             stop_timeout_criteria = self._check_stop_timeout(timeout, start_time)

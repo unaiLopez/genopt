@@ -7,46 +7,52 @@ class Individual:
         self.params = params
         self.search_space_type = search_space_type
         self.objective = objective
-        self.genome = self._initialize_genome()
-        self.fitness = None
+        self._genome = list()
+        self._fitness = None
     
     def __len__(self) -> int:
-        return len(self.genome)
+        return len(self._genome)
     
-    def _initialize_genome(self) -> list:
-        genome = list()
+    @property
+    def genome(self) -> list:
+        return self._genome
+    
+    @property
+    def fitness(self) -> Union[int, float]:
+        return self._fitness
+    
+    @fitness.setter
+    def fitness(self, fitness: Union[int, float]) -> None:
+        self._fitness = fitness
+    
+    @genome.setter
+    def genome(self, genome: list) -> None:
+        self._genome = genome
+
+    def initialize_genome(self) -> list:
         if self.search_space_type == 'flexible_search':
             for _, values in self.params.items():
                 if values['type'] == 'int':
-                    genome.append(np.random.randint(values['low'], values['high'] + 1))
+                    self._genome.append(np.random.randint(values['low'], values['high'] + 1))
                 elif values['type'] == 'float':
-                    genome.append(np.random.uniform(values['low'], values['high']))
+                    self._genome.append(np.random.uniform(values['low'], values['high']))
                 elif values['type'] == 'categorical':
-                    genome.append(np.random.choice(values['choices']))
+                    self._genome.append(np.random.choice(values['choices']))
                 else:
                     raise ValueError(f'Type {values["type"]} not supported.')
         else:
             for _, values in self.params.items():
-                genome.append(np.random.choice(values))
+                self._genome.append(np.random.choice(values))
         
-        return genome
+        return self._genome
     
     def get_name_genome_genes(self) -> dict:
         genome_gene_names = {}
         names = list(self.params.keys())
-        for name, gene in zip(names, self.genome):
+        for name, gene in zip(names, self._genome):
             genome_gene_names[name] = gene
         
         return genome_gene_names
     
     def calculate_fitness(self) -> None:
         self.fitness = self.objective(self.get_name_genome_genes())
-    
-    def get_genome(self) -> list:
-        return self.genome
-    
-    def get_fitness(self) -> Union[int, float]:
-        return self.fitness
-    
-    def set_genome(self, genome: list) -> None:
-        self.genome = genome

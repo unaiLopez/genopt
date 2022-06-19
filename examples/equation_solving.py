@@ -1,5 +1,6 @@
 import numpy as np
-
+import sys
+sys.path.append('../')
 from genetist.environment import Environment #pip install genetist
 from genetist.params import Params
 

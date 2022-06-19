@@ -3,7 +3,14 @@ import numpy as np
 from genetist.individual import Individual
 
 class Mutation:
+    @staticmethod
+    def getInstance(mutation_type: str, prob_mutation: float, search_space_type: str, params: dict):
+        if Mutation.__instance == None:
+            Mutation(mutation_type, prob_mutation, search_space_type, params)
+        return Mutation.__instance 
+
     def __init__(self, mutation_type: str, prob_mutation: float, search_space_type: str, params: dict):
+        Mutation.__instance = self
         self.mutation_type = mutation_type
         self.prob_mutation = prob_mutation
         self.search_space_type = search_space_type
@@ -60,24 +67,24 @@ class Mutation:
         return child_genome
     
     def _fixed_search_mutation_process(self, child: Individual, gene_index: int, param: str) -> Individual:
-        child_genome = child.get_genome()
+        child_genome = child.genome
         if len(self.params.get(param)) == 2:
             child_genome = self._mutate_fixed_binary_param(child_genome, gene_index, param)
         else:
             child_genome = self._mutate_fixed_non_binary_param(child_genome, gene_index, param)
-        child.set_genome(child_genome)
+        child.genome = child_genome
         
         return child
 
     def _flexible_search_mutation_process(self, child: Individual, gene_index: int, param: str) -> Individual:
-        child_genome = child.get_genome()
+        child_genome = child.genome
         if self.params.get(param).get('type') == 'int':
             child_genome = self._mutate_flexible_int_param(child_genome, gene_index, param)
         elif self.params.get(param).get('type') == 'float':
             child_genome[gene_index] = np.random.uniform(self.params[param]['low'], self.params[param]['high'])
         elif self.params.get(param).get('type') == 'categorical':
             child_genome = self._mutate_flexible_categorical_param(child_genome, gene_index, param)
-        child.set_genome(child_genome)
+        child.genome = child_genome
         
         return child
 
