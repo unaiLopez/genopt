@@ -1,6 +1,6 @@
 from typing import List
 
-class Params:
+class Parameters:
 
     @staticmethod
     def suggest_categorical(choices: List[str]) -> dict:

@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error
 
 from genetist.environment import Environment #pip install genetist
-from genetist.params import Params
+from genetist.parameters import Parameters
 
 #defining a fixed set of params for 5 variables
 params = {
@@ -20,11 +20,11 @@ params = {
 }
 #defining a 5 variable search space to fine tune the model
 params = {
-    'num_leaves': Params.suggest_int(2, 256),
-    'max_depth': Params.suggest_int(3, 20),
-    'learning_rate': Params.suggest_float(0.0005, 0.1),
-    'n_estimators': Params.suggest_int(50, 300),
-    'objective': Params.suggest_categorical(['regression', 'regression_l1'])
+    'num_leaves': Parameters.suggest_int(2, 256),
+    'max_depth': Parameters.suggest_int(3, 20),
+    'learning_rate': Parameters.suggest_float(0.0005, 0.1),
+    'n_estimators': Parameters.suggest_int(50, 300),
+    'objective': Parameters.suggest_categorical(['regression', 'regression_l1'])
 }
 
 #defining an objective function

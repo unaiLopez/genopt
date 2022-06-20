@@ -2,14 +2,14 @@ import numpy as np
 import sys
 sys.path.append('../')
 from genetist.environment import Environment #pip install genetist
-from genetist.params import Params
+from genetist.parameters import Parameters
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
-    'x': Params.suggest_float(-100, 100),
-    'y': Params.suggest_float(-100, 100),
-    'z': Params.suggest_float(-100, 100),
-    'k': Params.suggest_float(-100, 100)
+    'x': Parameters.suggest_float(-100, 100),
+    'y': Parameters.suggest_float(-100, 100),
+    'z': Parameters.suggest_float(-100, 100),
+    'k': Parameters.suggest_float(-100, 100)
 }
 
 #defining an objective function

@@ -16,7 +16,7 @@ $ pip install genetist
 ### 2.1. Define Search Space
 #### 2.1.1. Fixed Search Space
 ```python
-#defining a fixed set of params for 4 variables
+#defining a fixed set of Parameters for 4 variables
 params = {
     'x': [35, -51, 0, 1, 2, 3, 4, 66, 11, 50, 90],
     'y': [-100, -51, 0, 7, 32, 31, 4, 51, 121, 50, 90, 1000, 231]
@@ -26,14 +26,14 @@ params = {
 ```
 #### 2.1.2. Flexible Search Space
 ```python
-from genetist.params import Params
+from genetist.parameters import Parameters
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
-    'x': Params.suggest_float(-100, 100),
-    'y': Params.suggest_float(-100, 100),
-    'z': Params.suggest_float(-100, 100),
-    'k': Params.suggest_float(-100, 100)
+    'x': Parameters.suggest_float(-100, 100),
+    'y': Parameters.suggest_float(-100, 100),
+    'z': Parameters.suggest_float(-100, 100),
+    'k': Parameters.suggest_float(-100, 100)
 }
 ```
 ### 2.2. Define Objective Function
