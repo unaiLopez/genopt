@@ -1,7 +1,7 @@
 import unittest
 
 from genetist.mutation import Mutation
-from genetist.params import Params
+from genetist.parameters import Parameters
 
 class TestMutation(unittest.TestCase):
     def setUp(self):
@@ -11,14 +11,14 @@ class TestMutation(unittest.TestCase):
             'z': [-2.1, -2.9, 1.3]
         }
         self.flexible_params = {
-            'x': Params.suggest_int(0, 10),
-            'y': Params.suggest_categorical(['hello', 'goodbye']),
-            'z': Params.suggest_float(-10, 20)
+            'x': Parameters.suggest_int(0, 10),
+            'y': Parameters.suggest_categorical(['hello', 'goodbye']),
+            'z': Parameters.suggest_float(-10, 20)
         }
         self.flexible_params_multiple_categorical = {
-            'x': Params.suggest_int(0, 10),
-            'y': Params.suggest_categorical(['hello', 'goodbye', 'hey', 'how are you', 'hi']),
-            'z': Params.suggest_float(-10, 20)
+            'x': Parameters.suggest_int(0, 10),
+            'y': Parameters.suggest_categorical(['hello', 'goodbye', 'hey', 'how are you', 'hi']),
+            'z': Parameters.suggest_float(-10, 20)
         }
         self.single_gene_mutation_fixed_search = Mutation('single-gene', 1.0, 'fixed_search', self.fixed_params)
         self.single_gene_mutation_flexible_search = Mutation('single-gene', 1.0, 'flexible_search', self.flexible_params)
