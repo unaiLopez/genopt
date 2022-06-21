@@ -41,14 +41,18 @@ class Results:
     @best_individual.setter
     def best_individual(self, best_individual):
         self._best_individual = best_individual
+    
+    @best_per_generation_dataframe.setter
+    def best_per_generation_dataframe(self, best_per_generation_dataframe):
+        self._best_per_generation_dataframe = best_per_generation_dataframe
         
     def add_generation_results(self, generation: int, best_score: Union[int, float], best_individual: dict) -> None:
-            generation_results = {'generation': generation, 'best_score': best_score}
-            generation_results.update(best_individual)
-            values = [list(generation_results.values())]
-            columns = list(generation_results.keys())
-            df_generation_results = pd.DataFrame(values, columns=columns)
-            self._best_per_generation_dataframe = pd.concat([self._best_per_generation_dataframe, df_generation_results], axis=0)
+        generation_results = {'generation': generation, 'best_score': best_score}
+        generation_results.update(best_individual)
+        values = [list(generation_results.values())]
+        columns = list(generation_results.keys())
+        df_generation_results = pd.DataFrame(values, columns=columns)
+        self.best_per_generation_dataframe = pd.concat([self._best_per_generation_dataframe, df_generation_results], axis=0)
 
     def sort_best_per_generation_dataframe(self, column: str, direction: str) -> None:
         if direction == 'maximize':

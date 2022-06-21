@@ -6,8 +6,8 @@ class DataTypeInference:
     def infer_search_space_type(params: dict) -> str:
         keys = list(params.keys())
         for i, key in enumerate(keys):
-            if isinstance(key, str) == False:
-                raise Exception('Params keys must be string type.')
+            if isinstance(key, str) == False and isinstance(key, int) == False:
+                raise Exception('Params keys must be string or int type.')
             else:
                 if i == 0 and isinstance(params[key], dict):
                     search_space_type = 'flexible_search'

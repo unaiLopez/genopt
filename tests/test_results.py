@@ -40,6 +40,18 @@ class TestResults(unittest.TestCase):
     
     def test_best_per_generation_dataframe(self):
         self.assertTrue(isinstance(self.results.best_per_generation_dataframe, pd.DataFrame))
+    
+    def test_set_best_per_generation_dataframe(self):
+        new_best_per_generation_dataframe = pd.DataFrame({
+            'generation': [1],
+            'best_score': [10],
+            'x': [2],
+            'y': [1]
+        })
+
+        self.results.best_per_generation_dataframe = new_best_per_generation_dataframe
+
+        self.assertEqual(len(self.results.best_per_generation_dataframe), 1)
 
     def test_add_generation_results(self):
         generation = 1
