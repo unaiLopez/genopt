@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import random
 import time
 import math
@@ -77,15 +78,60 @@ class Environment:
                 new_individuals.append(self._calculate_fitness_process(individual))
 
         return new_individuals
+    
+    def _order_population_by_multiple_fitness(self, individuals: List[Individual], direction: List[str], weights: List[Union[int, float]]) -> List[Individual]:
+        if len(direction) != len(weights):
+            raise Exception(f'Direction length does not match weights length.')
+        else:
+            number_of_fitnesses = len(individuals[0].fitness)
+            if number_of_fitnesses != len(direction):
+                raise Exception(f'Direction and weights do not match number of fitness values.')
 
-    def _order_population_by_fitness(self, individuals: List[Individual], direction: str) -> List[Individual]:
-        if self.verbose > 1: logger.info(f'Ordering population by fitness...')
+            if weights == None:
+                weights = [1 / len(direction)] * len(direction)
+                logger.warning(f'Weights value is None. Weights will be defined as {weights}')
+            
+            df_ranks = pd.DataFrame({'idx_individual': range(len(individuals))})
+            for i in range(number_of_fitnesses):
+                list_fitness = [individual.fitness[i] for individual in individuals]
+                df_ranks[f'fitness_{i}'] = list_fitness
+                if direction[i] == 'maximize':
+                    df_ranks[f'normalized_fitness_{i}'] = (df_ranks[f'fitness_{i}'] - df_ranks[f'fitness_{i}'].min()) / (df_ranks[f'fitness_{i}'].max() - df_ranks[f'fitness_{i}'].min())
+                elif direction[i] == 'minimize':
+                    df_ranks[f'normalized_fitness_{i}'] = (df_ranks[f'fitness_{i}'] - df_ranks[f'fitness_{i}'].max()) / (df_ranks[f'fitness_{i}'].min() - df_ranks[f'fitness_{i}'].max())
+                else:
+                    raise Exception(f'Direction {direction} is not supported.')
+
+                if i == 0:
+                    df_ranks['overall_fitness'] = 0
+                    df_ranks['overall_fitness'] = df_ranks[f'normalized_fitness_{i}'].values * weights[i]
+                else:
+                    df_ranks['overall_fitness'] = df_ranks['overall_fitness'].values + df_ranks[f'normalized_fitness_{i}'].values * weights[i]
+            
+            df_ranks_sorted = df_ranks.sort_values(['overall_fitness'], ascending=False)
+            idx_individuals = df_ranks_sorted.idx_individual.values
+            individuals = [individuals[i] for i in idx_individuals]
+        
+        return individuals
+
+    def _order_population_by_single_fitness(self, individuals: List[Individual], direction: str):
         if direction == 'maximize':
             individuals = sorted(individuals, key=lambda individual: individual.fitness, reverse=True)
         elif direction == 'minimize':
             individuals = sorted(individuals, key=lambda individual: individual.fitness)
         else:
             raise Exception(f'Direction {direction} not supported.')
+            
+        return individuals
+
+    def _order_population_by_fitness(self, individuals: List[Individual], direction: Union[str, List[str]], weights: List[Union[int, float]]) -> List[Individual]:
+        if self.verbose > 1: logger.info(f'Ordering population by fitness...')
+        if isinstance(direction, str):
+            individuals = self._order_population_by_single_fitness(individuals, direction)
+        elif isinstance(direction, list):
+            individuals = self._order_population_by_multiple_fitness(individuals, direction, weights)
+        else:
+            raise Exception(f'Direction {direction} not supported. Must be of type str or List[str]')
 
         return individuals
 
@@ -162,13 +208,13 @@ class Environment:
         else:
             return False
 
-    def optimize(self, objective: Callable[[dict], Union[int,float]], direction: str, num_generations: int = None, timeout: int = None, stop_score: Union[float, int] = None, n_jobs: int = 1) -> Results:
+    def optimize(self, objective: Callable[[dict], Union[int,float, Tuple[Union[int, float]]]], direction: Union[str, List[str]], weights: List[Union[int, float]] = None, score_names: Union[str, List[str]] = None, num_generations: int = None, timeout: int = None, stop_score: Union[float, int] = None, n_jobs: int = 1) -> Results:
         start_time = time.time()
         
         results = Results()
         individuals = self._initialize_population(objective)
         individuals = self._calculate_population_fitness(individuals, n_jobs)
-        individuals = self._order_population_by_fitness(individuals, direction)
+        individuals = self._order_population_by_fitness(individuals, direction, weights)
 
         num_generations, timeout, stop_score = self._check_stop_criterias(num_generations, timeout, stop_score)
         for generation in range(0, num_generations):
@@ -177,7 +223,7 @@ class Environment:
             individuals = self._run_crossover_with_mutation(parents)
             individuals.extend(elite_individuals)
             individuals = self._calculate_population_fitness(individuals, n_jobs)
-            individuals = self._order_population_by_fitness(individuals, direction)
+            individuals = self._order_population_by_fitness(individuals, direction, weights)
             best_individual = individuals[0].get_name_genome_genes()
             best_score = individuals[0].fitness
             results.add_generation_results(generation+1, best_score, best_individual)
@@ -201,8 +247,7 @@ class Environment:
         results.execution_time = end_time - start_time
         results.best_score = best_score
         results.best_individual = best_individual
-        results.sort_best_per_generation_dataframe(column='best_score', direction=direction)
+        results.sort_best_per_generation_dataframe(direction=direction, weights=weights, score_names=score_names)
 
-            
         return results
 
