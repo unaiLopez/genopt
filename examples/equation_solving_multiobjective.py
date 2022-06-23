@@ -18,11 +18,15 @@ def objective(individual):
     z = individual['z']
     k = individual['k']
 
-    return ((x**2 - 4*y**3 / z**4) * k**3), (k**3 / x)
+    objective_1 = ((x**2 - 4*y**3 / z**4) * k**3)
+    objective_2 = (k**3 / x)
+
+    return objective_1, objective_2
 
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
-    #one-point crossover and a single gene mutation with a 25% probability of mutation
+    #one-point crossover, a single gene mutation with a 25% probability of mutation
+    #some verbose and a seed for reproducibility
     environment = Environment(
         params=params,
         num_population=100,
@@ -32,14 +36,16 @@ if __name__ == '__main__':
         verbose=1,
         random_state=42
     )
-    #minimizing the first value and maximazing the second value of the objective function
-    #and adding 1 stop criterias (timeout)
+    #minimizing the first value and maximazing the second value of the objective function,
+    #adding 1 stop criterias (timeout), adding 50% weight to each objective and
+    #assigning a name to each objective score for the final dataframe
     results = environment.optimize(
         objective=objective,
         direction=['minimize', 'maximize'],
         weights=[0.5, 0.5],
-        timeout=3,
-        score_names=['complex_equation_score', 'simple_equation_score'])
+        timeout=60,
+        score_names=['complex_equation_score', 'simple_equation_score']
+    )
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')

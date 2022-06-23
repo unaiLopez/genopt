@@ -36,7 +36,7 @@ params = {
     'k': Parameters.suggest_float(-100, 100)
 }
 ```
-### 2.2. Define Objective Function
+### 2.2. Define Single-Objective Function
 ```python
 #defining an objective function
 def objective(individual):
@@ -47,20 +47,36 @@ def objective(individual):
     
     return (x**2 - 4*y**3 / z**4) * k**3
 ```
-### 2.3. Start Optimization
+### 2.3. Define Multi-Objective Function
+```python
+#defining an objective function
+def objective(individual):
+    x = individual['x']
+    y = individual['y']
+    z = individual['z']
+    k = individual['k']
+
+    objective_1 = ((x**2 - 4*y**3 / z**4) * k**3)
+    objective_2 = (k**3 / x)
+
+    return objective_1, objective_2
+```
+### 2.4. Start Optimization for Single-Objective Function
 ```python
 from genetist.environment import Environment
 
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
-    #one-point crossover and a single gene mutation with a 25% probability of mutation
+    #one-point crossover, a single gene mutation with a 25% probability of mutation
+    #some verbose and a seed for reproducibility
     environment = Environment(
         params=params,
         num_population=100,
         crossover_type='one-point',
         mutation_type='single-gene',
         prob_mutation=0.25,
-        verbose=1
+        verbose=1,
+        random_state=42
     )
     #minimizing the objective function and adding 
     #3 stop criterias (num_generations, timeout, stop_score)
@@ -72,7 +88,35 @@ if __name__ == '__main__':
         stop_score=-np.inf
     )
 ```
-### 2.4. Show Optimization  Results
+### 2.5. Start Optimization for Multi-Objective Function
+```python
+from genetist.environment import Environment
+
+if __name__ == '__main__':
+    #defining our Environment instance with a population of 100 individuals,
+    #one-point crossover, a single gene mutation with a 25% probability of mutation
+    #some verbose and a seed for reproducibility
+    environment = Environment(
+        params=params,
+        num_population=100,
+        crossover_type='one-point',
+        mutation_type='single-gene',
+        prob_mutation=0.25,
+        verbose=1,
+        random_state=42
+    )
+    #minimizing the first value and maximazing the second value of the objective function,
+    #adding 1 stop criterias (timeout), adding 50% weight to each objective and
+    #assigning a name to each objective score for the final dataframe
+    results = environment.optimize(
+        objective=objective,
+        direction=['minimize', 'maximize'],
+        weights=[0.5, 0.5],
+        timeout=60,
+        score_names=['complex_equation_score', 'simple_equation_score']
+    )
+```
+### 2.6. Show Optimization  Results
 ```python
 print(f'EXECUTION TIME={results.execution_time}')
 print(f'BEST SCORE={results.best_score}')
