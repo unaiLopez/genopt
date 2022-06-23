@@ -29,11 +29,17 @@ if __name__ == '__main__':
         crossover_type='one-point',
         mutation_type='single-gene',
         prob_mutation=0.25,
-        verbose=1
+        verbose=1,
+        random_state=42
     )
     #minimizing the first value and maximazing the second value of the objective function
     #and adding 1 stop criterias (timeout)
-    results = environment.optimize(objective=objective, direction=['minimize', 'maximize'], weights=[0.5, 0.5], timeout=20, score_names=['complex_equation_score', 'simple_equation_score'])
+    results = environment.optimize(
+        objective=objective,
+        direction=['minimize', 'maximize'],
+        weights=[0.5, 0.5],
+        timeout=3,
+        score_names=['complex_equation_score', 'simple_equation_score'])
 
     print()
     print(f'EXECUTION TIME={results.execution_time}')
