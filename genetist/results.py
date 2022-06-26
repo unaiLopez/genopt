@@ -2,7 +2,8 @@ import pandas as pd
 import datetime
 
 from typing import Union, List
-from genetist.utils import rename_best_score_name_by_index, calculate_weighted_sum_score_by_index, normalize_best_score_by_index, define_weights_by_default_if_not_defined
+from genetist.individual import Individual
+from genetist.utils import rename_best_score_name_by_index, define_weights_by_default_if_not_defined, calculate_weighted_sum_score_by_index, normalize_best_score_by_index
 
 SCORE_COLUMN_DEFAULT_NAME = 'best_score'
 
@@ -11,6 +12,7 @@ class Results:
         self._best_score = None
         self._best_individual = None
         self._execution_time = None
+        self._last_generation_individuals_dataframe = pd.DataFrame()
         self._best_per_generation_dataframe = pd.DataFrame()
     
     @property
@@ -24,6 +26,10 @@ class Results:
     @property
     def best_individual(self):
         return self._best_individual
+    
+    @property
+    def last_generation_individuals_dataframe(self):
+        return self._last_generation_individuals_dataframe
     
     @property
     def best_per_generation_dataframe(self):
@@ -45,6 +51,10 @@ class Results:
     def best_individual(self, best_individual):
         self._best_individual = best_individual
     
+    @last_generation_individuals_dataframe.setter
+    def last_generation_individuals_dataframe(self, last_generation_individuals_dataframe):
+        self._last_generation_individuals_dataframe = last_generation_individuals_dataframe
+    
     @best_per_generation_dataframe.setter
     def best_per_generation_dataframe(self, best_per_generation_dataframe):
         self._best_per_generation_dataframe = best_per_generation_dataframe
@@ -57,6 +67,26 @@ class Results:
         df_generation_results = pd.DataFrame(values, columns=columns)
         self.best_per_generation_dataframe = pd.concat([self.best_per_generation_dataframe, df_generation_results], axis=0)
     
+    def create_last_generation_individuals_dataframe(self, generation: int, last_generation_individuals: List[Individual], score_names: Union[None, str, List[str]]) -> None:
+        for individual in last_generation_individuals:
+            generation_results = {'generation': generation, 'best_score': individual.fitness}
+            generation_results.update(individual.get_name_genome_genes())
+            values = [list(generation_results.values())]
+            columns = list(generation_results.keys())
+            df_individual_result = pd.DataFrame(values, columns=columns)
+            self.last_generation_individuals_dataframe = pd.concat([self.last_generation_individuals_dataframe, df_individual_result])
+
+        if isinstance(score_names, str):
+            self.last_generation.rename({
+                SCORE_COLUMN_DEFAULT_NAME: score_names
+            }, inplace=True)
+        elif isinstance(score_names, list):
+            number_of_fitnesses = len(self.best_per_generation_dataframe['best_score'].iloc[0])
+            for i in  range(number_of_fitnesses):
+                self.last_generation_individuals_dataframe[f'best_score_{i}'] = self.last_generation_individuals_dataframe['best_score'].apply(lambda best_score: best_score[i])
+                self.last_generation_individuals_dataframe = rename_best_score_name_by_index(self.last_generation_individuals_dataframe, score_names, i)
+            self.last_generation_individuals_dataframe.drop('best_score', axis=1, inplace=True)
+
     def _sort_best_per_generation_dataframe_by_single_objective(self, direction: str, score_names: Union[str, None]) -> None:
         if direction == 'maximize':
             self.best_per_generation_dataframe = self.best_per_generation_dataframe.sort_values(by=SCORE_COLUMN_DEFAULT_NAME, ascending=False)

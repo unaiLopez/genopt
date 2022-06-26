@@ -203,7 +203,7 @@ class Environment:
         individuals = self._order_population_by_fitness(individuals, direction, weights)
 
         num_generations, timeout, stop_score = self._check_stop_criterias(num_generations, timeout, stop_score)
-        for generation in range(0, num_generations):
+        for generation in range(1, num_generations):
             elite_individuals = self._get_elite(individuals)
             parents = self._choose_parents(individuals)
             individuals = self._run_crossover_with_mutation(parents)
@@ -212,13 +212,13 @@ class Environment:
             individuals = self._order_population_by_fitness(individuals, direction, weights)
             best_individual = individuals[0].get_name_genome_genes()
             best_score = individuals[0].fitness
-            self.results.add_generation_results(generation+1, best_score, best_individual)
+            self.results.add_generation_results(generation, best_score, best_individual)
             
             stop_timeout_criteria = self._check_stop_timeout(timeout, start_time)
             stop_score_criteria = self._check_stop_score(stop_score, best_score, direction)
             stop_num_generations_criteria = self._check_num_generations_criteria(num_generations, generation)
             if self.verbose >= 1:
-                logger.info(f'THE BEST SOLUTION IN GENERATION {generation+1} IS {best_individual} WITH A SCORE OF {best_score}')
+                logger.info(f'THE BEST SOLUTION IN GENERATION {generation} IS {best_individual} WITH A SCORE OF {best_score}')
                 if stop_timeout_criteria:
                     logger.info('TIMEOUT STOP CRITERIA SATISFIED.')
                 if stop_score_criteria:
@@ -233,7 +233,8 @@ class Environment:
         self.results.execution_time = end_time - start_time
         self.results.best_score = best_score
         self.results.best_individual = best_individual
-        self.results.sort_best_per_generation_dataframe(direction=direction, weights=weights, score_names=score_names)
+        self.results.create_last_generation_individuals_dataframe(generation, individuals, score_names)
+        self.results.sort_best_per_generation_dataframe(direction, weights, score_names)
 
         return self.results
 

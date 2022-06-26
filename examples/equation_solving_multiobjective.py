@@ -1,3 +1,5 @@
+import sys
+sys.path.append('../')
 from genetist.environment import Environment #pip install genetist
 from genetist.parameters import Parameters
 
@@ -41,7 +43,7 @@ if __name__ == '__main__':
         objective=objective,
         direction=['minimize', 'maximize'],
         weights=[0.5, 0.5],
-        timeout=60,
+        timeout=10,
         score_names=['complex_equation_score', 'simple_equation_score']
     )
 
@@ -49,7 +51,9 @@ if __name__ == '__main__':
     print(f'EXECUTION TIME={results.execution_time}')
     print(f'BEST SCORE={results.best_score}')
     print(f'BEST INDIVIDUAL={results.best_individual}')
-    print('BEST PER GENERATION:')
+    print('BEST INDIVIDUALS PER GENERATION:')
     print(results.best_per_generation_dataframe)
+    print('LAST GENERATION INDIVIDUALS:')
+    print(results.last_generation_individuals_dataframe)
 
     

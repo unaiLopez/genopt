@@ -1,5 +1,6 @@
 import logging
 import pandas as pd
+import numpy as np
 
 from typing import List, Union
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -35,6 +36,8 @@ def calculate_weighted_sum_score_by_index(df: pd.DataFrame, weights: List[float]
 def define_weights_by_default_if_not_defined(weights: Union[List[float], None], direction: List[str]) -> pd.DataFrame:
     if weights == None:
         weights = [1 / len(direction)] * len(direction)
-        logger.warning(f'Weights value is None. Weights will be defined as {weights}')
+        logger.warning(f'Weights value is None. Weights will be defined as {weights}.')
+    elif np.sum(weights) != 1:
+        raise Exception(f'Weights must sum up to 1.')
     
     return weights
