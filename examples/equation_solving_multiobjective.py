@@ -1,5 +1,3 @@
-import sys
-sys.path.append('../')
 from genetist.environment import Environment #pip install genetist
 from genetist.parameters import Parameters
 
@@ -53,3 +51,5 @@ if __name__ == '__main__':
     print(f'BEST INDIVIDUAL={results.best_individual}')
     print('BEST PER GENERATION:')
     print(results.best_per_generation_dataframe)
+
+    
