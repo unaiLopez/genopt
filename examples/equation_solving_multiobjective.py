@@ -30,7 +30,8 @@ if __name__ == '__main__':
     environment = Environment(
         params=params,
         num_population=100,
-        crossover_type='uniform',
+        selection_type='tournament',
+        crossover_type='one-point',
         mutation_type='single-gene',
         prob_mutation=0.25,
         verbose=1,

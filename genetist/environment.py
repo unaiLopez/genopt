@@ -7,6 +7,7 @@ import logging
 
 from typing import Callable, List, Tuple, Union
 from multiprocessing import Pool, cpu_count
+from genetist.selection import Selection
 from genetist.crossover import Crossover
 from genetist.mutation import Mutation
 from genetist.individual import Individual
@@ -21,9 +22,10 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 logger = logging.getLogger('ENVIRONMENT')
 
 class Environment:
-    def __init__(self, params: dict, num_population: int = 100, crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
+    def __init__(self, params: dict, num_population: int = 100, selection_type: str = 'roulette', crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
         self.params = params
         self.num_population = num_population
+        self.selection_type = selection_type
         self.crossover_type = crossover_type
         self.mutation_type = mutation_type
         self.prob_mutation = prob_mutation
@@ -122,19 +124,14 @@ class Environment:
 
         return individuals
 
-    def _choose_parents(self, individuals: List[Individual]) -> List[Tuple[Individual, Individual]]:
+    def _run_selection(self, individuals: List[Individual]) -> List[Tuple[Individual, Individual]]:
         if self.verbose > 1: logger.info(f'Selecting parents...')
         parents = list()
-        weights = np.arange(len(individuals), 0, step=-1)
+        selection = Selection.getInstance(self.selection_type)
         number_of_parents = math.ceil(len(individuals) * (1 - self.elite_rate)) // 2
         for _ in range(number_of_parents):
-            parents.append(
-                random.choices(
-                    population=individuals,
-                    weights=weights,
-                    k=2
-                )
-            )
+            parent_1, parent_2 = selection.selection(individuals)
+            parents.append([parent_1, parent_2])
 
         return parents
 
@@ -205,7 +202,7 @@ class Environment:
         num_generations, timeout, stop_score = self._check_stop_criterias(num_generations, timeout, stop_score)
         for generation in range(1, num_generations):
             elite_individuals = self._get_elite(individuals)
-            parents = self._choose_parents(individuals)
+            parents = self._run_selection(individuals)
             individuals = self._run_crossover_with_mutation(parents)
             individuals.extend(elite_individuals)
             individuals = self._calculate_population_fitness(individuals, n_jobs)
