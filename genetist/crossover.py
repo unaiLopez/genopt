@@ -22,6 +22,7 @@ class Crossover:
         
         child_1_genome = parent_1.genome[:point] + parent_2.genome[point:]
         child_2_genome = parent_2.genome[:point] + parent_1.genome[point:]
+        
         child_1 = copy(parent_1)
         child_2 = copy(parent_2)
         child_1.genome = child_1_genome
@@ -67,8 +68,19 @@ class Crossover:
             child_2.genome = child_2_genome
         
         return child_1, child_2
-        
+    
+    def _uniform_crossover(self, parent_1: Individual, parent_2: Individual) -> Tuple[Individual, Individual]:
+        parents_genome = list(zip(*[parent_1.genome, parent_2.genome]))
+        child_1_genome = list([np.random.choice(genome) for genome in parents_genome])
+        child_2_genome = list([np.random.choice(genome) for genome in parents_genome])
 
+        child_1 = copy(parent_1)
+        child_2 = copy(parent_2)
+        child_1.genome = child_1_genome
+        child_2.genome = child_2_genome
+
+        return child_1, child_2
+        
     def crossover(self, parent_1: Individual, parent_2: Individual) -> Tuple[Individual, Individual]:
         if self.crossover_type == 'one-point':
             return self._one_point_crossover(parent_1, parent_2)
@@ -76,5 +88,7 @@ class Crossover:
             return self._two_point_crossover(parent_1, parent_2)
         elif self.crossover_type == 'three-point':
             return self._three_point_crossover(parent_1, parent_2)
+        elif self.crossover_type == 'uniform':
+            return self._uniform_crossover(parent_1, parent_2)
         else:
             raise Exception(f'Crossover {self.crossover_type} not supported.')
