@@ -110,7 +110,7 @@ if __name__ == '__main__':
         stop_score=-np.inf
     )
 ```
-### 2.6. Start Optimization for Multi-Objective Function
+### 2.6. Start Optimization for Multi-Objective Function and Custom Parameters
 ```python
 from genetist.environment import Environment
 
