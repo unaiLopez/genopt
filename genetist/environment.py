@@ -22,10 +22,12 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 logger = logging.getLogger('ENVIRONMENT')
 
 class Environment:
-    def __init__(self, params: dict, num_population: int = 100, selection_type: str = 'roulette', crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
+    def __init__(self, params: dict, num_population: int = 100, selection_rate: float = 0.5, selection_type: str = 'roulette', tournament_size: int = 5, crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
         self.params = params
         self.num_population = num_population
+        self.selection_rate = selection_rate
         self.selection_type = selection_type
+        self.tournament_size = tournament_size
         self.crossover_type = crossover_type
         self.mutation_type = mutation_type
         self.prob_mutation = prob_mutation
@@ -127,12 +129,11 @@ class Environment:
     def _run_selection(self, individuals: List[Individual]) -> List[Tuple[Individual, Individual]]:
         if self.verbose > 1: logger.info(f'Selecting parents...')
         parents = list()
-        selection = Selection.getInstance(self.selection_type)
-        number_of_parents = math.ceil(len(individuals) * (1 - self.elite_rate)) // 2
-        for _ in range(number_of_parents):
-            parent_1, parent_2 = selection.selection(individuals)
-            parents.append([parent_1, parent_2])
-
+        selection = Selection.getInstance(self.selection_type, self.tournament_size)
+        
+        number_of_parents = int((len(individuals) * (1 - self.elite_rate) * self.selection_rate) // 2)
+        parents = selection.selection(individuals, number_of_parents)
+       
         return parents
 
     def _run_crossover_with_mutation(self, best_parents: List[Tuple[Individual, Individual]]) -> List[Individual]:
@@ -191,6 +192,15 @@ class Environment:
                 return False
         else:
             return False
+    
+    def _create_new_individuals(self, individuals, objective):
+        num_individuals_to_create = self.num_population - len(individuals)
+        for _ in range(num_individuals_to_create):
+            individual = self._create_individual_checking_duplicates(objective)
+            individuals.append(individual)
+
+        return individuals
+
 
     def optimize(self, objective: Callable[[dict], Union[int,float, Tuple[Union[int, float]]]], direction: Union[str, List[str]], weights: List[Union[int, float]] = None, score_names: Union[str, List[str]] = None, num_generations: int = None, timeout: int = None, stop_score: Union[float, int] = None, n_jobs: int = 1) -> Results:
         start_time = time.time()
@@ -205,6 +215,7 @@ class Environment:
             parents = self._run_selection(individuals)
             individuals = self._run_crossover_with_mutation(parents)
             individuals.extend(elite_individuals)
+            individuals = self._create_new_individuals(individuals, objective)
             individuals = self._calculate_population_fitness(individuals, n_jobs)
             individuals = self._order_population_by_fitness(individuals, direction, weights)
             best_individual = individuals[0].get_name_genome_genes()
