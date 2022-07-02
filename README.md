@@ -74,7 +74,7 @@ if __name__ == '__main__':
         params=params
     )
     #minimizing the objective function and adding a 60 seconds timeout
-    #as an stop criteria
+    #as an stop criteria and a single core execution (n_jobs=1)
     results = environment.optimize(
         objective=objective,
         direction='minimize',
