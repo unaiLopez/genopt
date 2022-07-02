@@ -69,7 +69,7 @@ if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
     #roulette selection for 50% of the population, one-point crossover, 
     #a single gene mutation with 10% probability of mutation,
-    #10% elite rate and some verbose and without a seed for reproducibility
+    #10% elite rate, some verbose and without a seed for reproducibility
     environment = Environment(
         params=params
     )
@@ -88,7 +88,7 @@ from genetist.environment import Environment
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
     #tournament selection for 80% of the population, one-point crossover, 
-    #a single gene mutation with 25% probability of mutation and some verbose and a seed for reproducibility
+    #a single gene mutation with 25% probability of mutation, some verbose and a seed for reproducibility
     environment = Environment(
         params=params,
         num_population=100,
@@ -117,7 +117,7 @@ from genetist.environment import Environment
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
     #ranking selection for 70% of the population, one-point crossover,
-    #a single gene mutation with 25% probability of mutation and some verbose and a seed for reproducibility
+    #a single gene mutation with 25% probability of mutation, some verbose and a seed for reproducibility
     environment = Environment(
         params=params,
         num_population=100,
