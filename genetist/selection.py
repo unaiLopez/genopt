@@ -41,8 +41,10 @@ class Selection:
     
     def _ranking_selection(self, individuals: List[Individual], number_of_parents: int) -> List[Tuple[Individual, Individual]]:
         all_parents = list()
-        for i in range(number_of_parents):
-            all_parents.append([individuals[i], individuals[i+1]])
+        parent_individual = iter(range(number_of_parents))
+        parents = zip(parent_individual, parent_individual)
+        for parent_index_1, parent_index_2 in parents:
+            all_parents.append([individuals[parent_index_1], individuals[parent_index_2]])
         
         return all_parents
 

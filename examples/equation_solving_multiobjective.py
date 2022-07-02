@@ -31,12 +31,12 @@ if __name__ == '__main__':
         params=params,
         num_population=100,
         selection_rate=0.7,
-        selection_type='tournament',
+        selection_type='ranking',
         crossover_type='one-point',
         mutation_type='single-gene',
         prob_mutation=0.25,
         verbose=1,
-        random_state=42
+        #random_state=42
     )
     #minimizing the first value and maximazing the second value of the objective function,
     #adding 1 stop criterias (timeout), adding 50% weight to each objective and
