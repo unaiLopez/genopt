@@ -61,17 +61,39 @@ def objective(individual):
 
     return objective_1, objective_2
 ```
-### 2.4. Start Optimization for Single-Objective Function
+### 2.4. Start Optimization for Single-Objective Function and Default Parameters
 ```python
 from genetist.environment import Environment
 
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
-    #one-point crossover, a single gene mutation with a 25% probability of mutation
-    #some verbose and a seed for reproducibility
+    #roulette selection for 50% of the population, one-point crossover, 
+    #a single gene mutation with 10% probability of mutation,
+    #10% elite rate and some verbose and without a seed for reproducibility
+    environment = Environment(
+        params=params
+    )
+    #minimizing the objective function and adding a 60 seconds timeout
+    #as an stop criteria
+    results = environment.optimize(
+        objective=objective,
+        direction='minimize',
+        timeout=60
+    )
+```
+### 2.5. Start Optimization for Single-Objective Function and Custom Parameters
+```python
+from genetist.environment import Environment
+
+if __name__ == '__main__':
+    #defining our Environment instance with a population of 100 individuals,
+    #tournament selection for 80% of the population, one-point crossover, 
+    #a single gene mutation with 25% probability of mutation and some verbose and a seed for reproducibility
     environment = Environment(
         params=params,
         num_population=100,
+        selection_type='tournament',
+        selection_rate=0.8,
         crossover_type='one-point',
         mutation_type='single-gene',
         prob_mutation=0.25,
@@ -88,17 +110,19 @@ if __name__ == '__main__':
         stop_score=-np.inf
     )
 ```
-### 2.5. Start Optimization for Multi-Objective Function
+### 2.6. Start Optimization for Multi-Objective Function
 ```python
 from genetist.environment import Environment
 
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
-    #one-point crossover, a single gene mutation with a 25% probability of mutation
-    #some verbose and a seed for reproducibility
+    #ranking selection for 70% of the population, one-point crossover,
+    #a single gene mutation with 25% probability of mutation and some verbose and a seed for reproducibility
     environment = Environment(
         params=params,
         num_population=100,
+        selection_type='ranking',
+        selection_rate=0.7,
         crossover_type='one-point',
         mutation_type='single-gene',
         prob_mutation=0.25,
@@ -116,11 +140,13 @@ if __name__ == '__main__':
         score_names=['complex_equation_score', 'simple_equation_score']
     )
 ```
-### 2.6. Show Optimization  Results
+### 2.7. Show Optimization  Results
 ```python
 print(f'EXECUTION TIME={results.execution_time}')
 print(f'BEST SCORE={results.best_score}')
 print(f'BEST INDIVIDUAL={results.best_individual}')
 print('BEST PER GENERATION:')
 print(results.best_per_generation_dataframe)
+print('LAST GENERATION INDIVIDUALS:')
+print(results.last_generation_individuals_dataframe)
 ```
