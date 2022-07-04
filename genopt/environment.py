@@ -7,16 +7,16 @@ import logging
 
 from typing import Callable, List, Tuple, Union
 from multiprocessing import Pool, cpu_count
-from genetist.selection import Selection
-from genetist.crossover import Crossover
-from genetist.mutation import Mutation
-from genetist.individual import Individual
-from genetist.datatype_inference import DataTypeInference
-from genetist.results import Results
-from genetist.utils import define_weights_by_default_if_not_defined, normalize_best_score_by_index, calculate_weighted_sum_score_by_index
+from genopt.selection import Selection
+from genopt.crossover import Crossover
+from genopt.mutation import Mutation
+from genopt.individual import Individual
+from genopt.datatype_inference import DataTypeInference
+from genopt.results import Results
+from genopt.utils import define_weights_by_default_if_not_defined, normalize_best_score_by_index, calculate_weighted_sum_score_by_index
 
 
-MAX_GENERATIONS = 999999999999
+MAX_GENERATIONS = 999999999999999
 MAX_ATTEMPS_PER_INDIVIDUAL = 5
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('ENVIRONMENT')

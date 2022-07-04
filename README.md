@@ -26,7 +26,7 @@ params = {
 ```
 #### 2.1.2. Flexible Search Space
 ```python
-from genetist.parameters import Parameters
+from genopt.parameters import Parameters
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
@@ -63,7 +63,7 @@ def objective(individual):
 ```
 ### 2.4. Start Optimization for Single-Objective Function and Default Parameters
 ```python
-from genetist.environment import Environment
+from genopt.environment import Environment
 
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
@@ -83,7 +83,7 @@ if __name__ == '__main__':
 ```
 ### 2.5. Start Optimization for Single-Objective Function and Custom Parameters
 ```python
-from genetist.environment import Environment
+from genopt.environment import Environment
 
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,
@@ -112,7 +112,7 @@ if __name__ == '__main__':
 ```
 ### 2.6. Start Optimization for Multi-Objective Function and Custom Parameters
 ```python
-from genetist.environment import Environment
+from genopt.environment import Environment
 
 if __name__ == '__main__':
     #defining our Environment instance with a population of 100 individuals,

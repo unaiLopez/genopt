@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 from typing import List, Tuple
-from genetist.individual import Individual
+from genopt.individual import Individual
 
 class Selection:
     __instance = None

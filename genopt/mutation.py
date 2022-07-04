@@ -1,6 +1,6 @@
 import numpy as np
 
-from genetist.individual import Individual
+from genopt.individual import Individual
 
 class Mutation:
     __instance = None
