@@ -7,23 +7,27 @@ import logging
 
 from typing import Callable, List, Tuple, Union
 from multiprocessing import Pool, cpu_count
-from genetist.crossover import Crossover
-from genetist.mutation import Mutation
-from genetist.individual import Individual
-from genetist.datatype_inference import DataTypeInference
-from genetist.results import Results
-from genetist.utils import define_weights_by_default_if_not_defined, normalize_best_score_by_index, calculate_weighted_sum_score_by_index
+from genopt.selection import Selection
+from genopt.crossover import Crossover
+from genopt.mutation import Mutation
+from genopt.individual import Individual
+from genopt.datatype_inference import DataTypeInference
+from genopt.results import Results
+from genopt.utils import define_weights_by_default_if_not_defined, normalize_best_score_by_index, calculate_weighted_sum_score_by_index
 
 
-MAX_GENERATIONS = 999999999999
+MAX_GENERATIONS = 999999999999999
 MAX_ATTEMPS_PER_INDIVIDUAL = 5
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('ENVIRONMENT')
 
 class Environment:
-    def __init__(self, params: dict, num_population: int = 100, crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
+    def __init__(self, params: dict, num_population: int = 100, selection_rate: float = 0.5, selection_type: str = 'roulette', tournament_size: int = 5, crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
         self.params = params
         self.num_population = num_population
+        self.selection_rate = selection_rate
+        self.selection_type = selection_type
+        self.tournament_size = tournament_size
         self.crossover_type = crossover_type
         self.mutation_type = mutation_type
         self.prob_mutation = prob_mutation
@@ -122,20 +126,14 @@ class Environment:
 
         return individuals
 
-    def _choose_parents(self, individuals: List[Individual]) -> List[Tuple[Individual, Individual]]:
+    def _run_selection(self, individuals: List[Individual]) -> List[Tuple[Individual, Individual]]:
         if self.verbose > 1: logger.info(f'Selecting parents...')
         parents = list()
-        weights = np.arange(len(individuals), 0, step=-1)
-        number_of_parents = math.ceil(len(individuals) * (1 - self.elite_rate)) // 2
-        for _ in range(number_of_parents):
-            parents.append(
-                random.choices(
-                    population=individuals,
-                    weights=weights,
-                    k=2
-                )
-            )
-
+        selection = Selection.getInstance(self.selection_type, self.tournament_size)
+        
+        number_of_parents = int((len(individuals) * (1 - self.elite_rate) * self.selection_rate) // 2)
+        parents = selection.selection(individuals, number_of_parents)
+       
         return parents
 
     def _run_crossover_with_mutation(self, best_parents: List[Tuple[Individual, Individual]]) -> List[Individual]:
@@ -194,6 +192,15 @@ class Environment:
                 return False
         else:
             return False
+    
+    def _create_new_individuals(self, individuals, objective):
+        num_individuals_to_create = self.num_population - len(individuals)
+        for _ in range(num_individuals_to_create):
+            individual = self._create_individual_checking_duplicates(objective)
+            individuals.append(individual)
+
+        return individuals
+
 
     def optimize(self, objective: Callable[[dict], Union[int,float, Tuple[Union[int, float]]]], direction: Union[str, List[str]], weights: List[Union[int, float]] = None, score_names: Union[str, List[str]] = None, num_generations: int = None, timeout: int = None, stop_score: Union[float, int] = None, n_jobs: int = 1) -> Results:
         start_time = time.time()
@@ -205,9 +212,10 @@ class Environment:
         num_generations, timeout, stop_score = self._check_stop_criterias(num_generations, timeout, stop_score)
         for generation in range(1, num_generations):
             elite_individuals = self._get_elite(individuals)
-            parents = self._choose_parents(individuals)
+            parents = self._run_selection(individuals)
             individuals = self._run_crossover_with_mutation(parents)
             individuals.extend(elite_individuals)
+            individuals = self._create_new_individuals(individuals, objective)
             individuals = self._calculate_population_fitness(individuals, n_jobs)
             individuals = self._order_population_by_fitness(individuals, direction, weights)
             best_individual = individuals[0].get_name_genome_genes()

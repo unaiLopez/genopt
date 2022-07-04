@@ -2,8 +2,8 @@ import pandas as pd
 import datetime
 
 from typing import Union, List
-from genetist.individual import Individual
-from genetist.utils import rename_best_score_name_by_index, define_weights_by_default_if_not_defined, calculate_weighted_sum_score_by_index, normalize_best_score_by_index
+from genopt.individual import Individual
+from genopt.utils import rename_best_score_name_by_index, define_weights_by_default_if_not_defined, calculate_weighted_sum_score_by_index, normalize_best_score_by_index
 
 SCORE_COLUMN_DEFAULT_NAME = 'best_score'
 

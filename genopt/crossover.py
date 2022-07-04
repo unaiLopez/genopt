@@ -2,7 +2,7 @@ import numpy as np
 
 from copy import copy
 from typing import Tuple
-from genetist.individual import Individual
+from genopt.individual import Individual
 
 class Crossover:
     __instance = None
