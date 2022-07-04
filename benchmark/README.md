@@ -1,4 +1,15 @@
 # BENCHMARKING
+Due to the stochastic nature of optuna and genopt frameworks, each benchmarking optimization process has been executed 5 times and the the results has been compared.
+
+The first equation to optimize is the following:
+```python
+(x**2 - 4*y**3 / z**4) * k**3
+```
+The second equation to optimize is the following:
+```python
+np.cos(x) * np.cos(y) * np.cos(z) * np.cos(k)
+```
+
 ## Genopt
 | EQUATIONS   | BEST_SCORE             | WORST_SCORE            | MEAN_SCORE              | STD_SCORES             |
 |-------------|------------------------|------------------------|-------------------------|------------------------|
