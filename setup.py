@@ -9,7 +9,7 @@ INSTALL_REQUIRES = [
     'pandas==1.3.4',
 ]
 
-VERSION = '0.9.11'
+VERSION = '0.9.12'
 
 if __name__ == '__main__':
     setup(
