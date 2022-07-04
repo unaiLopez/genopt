@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 logger = logging.getLogger('ENVIRONMENT')
 
 class Environment:
-    def __init__(self, params: dict, num_population: int = 100, selection_rate: float = 0.5, selection_type: str = 'roulette', tournament_size: int = 5, crossover_type: str = 'one_point', mutation_type: str = 'single_gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
+    def __init__(self, params: dict, num_population: int = 100, selection_rate: float = 0.5, selection_type: str = 'roulette', tournament_size: int = 5, crossover_type: str = 'one-point', mutation_type: str = 'single-gene', prob_mutation: float = 0.1, elite_rate: float = 0.1, verbose: int = 1, random_state: int = None):
         self.params = params
         self.num_population = num_population
         self.selection_rate = selection_rate

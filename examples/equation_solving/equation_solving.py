@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../')
+sys.path.append('../../')
 from genopt.environment import Environment #pip install genopt
 from genopt.parameters import Parameters
 
