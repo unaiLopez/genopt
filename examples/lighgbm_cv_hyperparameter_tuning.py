@@ -7,8 +7,8 @@ from lightgbm import LGBMRegressor
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error
 
-from genetist.environment import Environment #pip install genetist
-from genetist.parameters import Parameters
+from genopt.environment import Environment #pip install genopt
+from genopt.parameters import Parameters
 
 #defining a fixed set of params for 5 variables
 params = {

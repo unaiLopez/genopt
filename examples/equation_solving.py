@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
-from genetist.environment import Environment #pip install genetist
-from genetist.parameters import Parameters
+from genopt.environment import Environment #pip install genopt
+from genopt.parameters import Parameters
 
 #defining a 4 variable search space of float values from -100.0 to 100.0
 params = {
