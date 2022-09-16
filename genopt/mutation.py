@@ -62,8 +62,12 @@ class Mutation:
         keep_mutating = True
         while keep_mutating:
             new_gene = np.random.choice(self.params.get(param))
-            if new_gene != child_genome[gene_index]:
-                keep_mutating = False
+            if isinstance(new_gene, str):
+                if (new_gene == child_genome[gene_index]) == False:
+                    keep_mutating = False
+            else:
+                if new_gene != child_genome[gene_index]:
+                    keep_mutating = False
         child_genome[gene_index] = new_gene
 
         return child_genome
